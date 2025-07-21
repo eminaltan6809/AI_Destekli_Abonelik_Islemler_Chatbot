@@ -1,0 +1,36 @@
+{
+  "version": 2,
+  "dgSpecHash": "eh356ywo7y8=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\bjk-6\\Desktop\\AI Destekli Abonelik Sistemi Chatbot Demo\\AI_Destekli_Abonelik_Chatbot\\AI_Destekli_Abonelik_Chatbot.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\1.1.1\\microsoft.bcl.asyncinterfaces.1.1.1.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\9.0.7\\microsoft.extensions.caching.abstractions.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.7\\microsoft.extensions.caching.memory.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.configuration\\2.1.0\\microsoft.extensions.configuration.2.1.0.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.configuration.abstractions\\2.1.0\\microsoft.extensions.configuration.abstractions.2.1.0.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.configuration.binder\\2.1.0\\microsoft.extensions.configuration.binder.2.1.0.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.dependencyinjection.abstractions\\9.0.7\\microsoft.extensions.dependencyinjection.abstractions.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.http\\2.1.0\\microsoft.extensions.http.2.1.0.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.logging\\2.1.0\\microsoft.extensions.logging.2.1.0.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\9.0.7\\microsoft.extensions.logging.abstractions.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.options\\9.0.7\\microsoft.extensions.options.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\microsoft.extensions.primitives\\9.0.7\\microsoft.extensions.primitives.9.0.7.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\newtonsoft.json\\13.0.3\\newtonsoft.json.13.0.3.nupkg.sha512",
+    "C:\\Users\\bjk-6\\.nuget\\packages\\openai\\1.7.0\\openai.1.7.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1603",
+      "level": "Warning",
+      "message": "AI_Destekli_Abonelik_Chatbot depends on OpenAI (>= 1.6.5) but OpenAI 1.6.5 was not found. OpenAI 1.7.0 was resolved instead.",
+      "projectPath": "C:\\Users\\bjk-6\\Desktop\\AI Destekli Abonelik Sistemi Chatbot Demo\\AI_Destekli_Abonelik_Chatbot\\AI_Destekli_Abonelik_Chatbot.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\bjk-6\\Desktop\\AI Destekli Abonelik Sistemi Chatbot Demo\\AI_Destekli_Abonelik_Chatbot\\AI_Destekli_Abonelik_Chatbot.csproj",
+      "libraryId": "OpenAI",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Admin Paneli";
+    var chatHistory = ViewBag.ChatHistory as string;
+    var scenario = ViewBag.Scenario as string;
+    var sessionData = ViewBag.SessionData;
+}
+<div class="container mt-5">
+    <h2 class="mb-4">Admin Paneli</h2>
+    <div class="mb-3">
+        <strong>Senaryo:</strong> @scenario
+    </div>
+    <div class="mb-3">
+        <strong>Session Bilgileri:</strong>
+        <pre>@Newtonsoft.Json.JsonConvert.SerializeObject(sessionData, Newtonsoft.Json.Formatting.Indented)</pre>
+    </div>
+    <div>
+        <strong>Chat Geçmişi:</strong>
+        <pre>@chatHistory</pre>
+    </div>
+</div> 

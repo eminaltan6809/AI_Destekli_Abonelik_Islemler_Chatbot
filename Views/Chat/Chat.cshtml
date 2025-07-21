@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Chatbot";
+    var scenario = ViewBag.Scenario;
+}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">@scenario senaryosu için Chatbot</h2>
+    <div id="chatbox" class="border rounded p-3 mb-3" style="height: 350px; overflow-y: auto; background: #f8f9fa;"></div>
+    <form id="chatForm" class="d-flex">
+        <input type="text" id="userInput" class="form-control me-2" placeholder="Mesajınızı yazın..." autocomplete="off" />
+        <button type="submit" class="btn btn-primary">Gönder</button>
+    </form>
+</div>
+@section Scripts {
+    <script src="~/js/chat.js"></script>
+} 

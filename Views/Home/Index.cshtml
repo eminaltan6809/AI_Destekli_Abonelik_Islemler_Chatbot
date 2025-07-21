@@ -1,0 +1,45 @@
+﻿@{
+    ViewData["Title"] = "Abonelik İşlemleri";
+}
+<div class="container mt-5">
+    <h2 class="mb-4 text-center">Ne işlem yapmak istiyorsunuz?</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="d-grid gap-3">
+                <!-- İşlem seçenekleri -->
+                <form method="get" action="/Chat/Start">
+                    <input type="hidden" name="scenario" value="FaturaOdemesi" />
+                    <button type="submit" class="btn btn-primary btn-lg">Fatura Ödemesi</button>
+                </form>
+                <form method="get" action="/Chat/Start">
+                    <input type="hidden" name="scenario" value="AbonelikIptali" />
+                    <button type="submit" class="btn btn-danger btn-lg">Abonelik İptali</button>
+                </form>
+                <form method="get" action="/Chat/Start">
+                    <input type="hidden" name="scenario" value="FaturaItirazi" />
+                    <button type="submit" class="btn btn-warning btn-lg">Fatura İtirazı</button>
+                </form>
+                <form method="get" action="/Chat/Start">
+                    <input type="hidden" name="scenario" value="ElektrikArizasi" />
+                    <button type="submit" class="btn btn-info btn-lg">Elektrik Arızası</button>
+                </form>
+                <form method="get" action="/Chat/Start">
+                    <input type="hidden" name="scenario" value="Diger" />
+                    <button type="submit" class="btn btn-secondary btn-lg">Diğer</button>
+                </form>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Serbest Sohbet</h5>
+                    <p class="card-text">Konudan bağımsız, GPT ile sohbet başlatmak için tıklayın.</p>
+                    <form method="get" action="/Chat/Start">
+                        <input type="hidden" name="scenario" value="SerbestSohbet" />
+                        <button type="submit" class="btn btn-success">Sohbet Et</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
