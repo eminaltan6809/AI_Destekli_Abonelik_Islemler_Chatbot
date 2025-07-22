@@ -1,20 +1,58 @@
+@model List<AI_Destekli_Abonelik_Chatbot.Models.ChatHistory>
 @{
     ViewData["Title"] = "Admin Paneli";
-    var chatHistory = ViewBag.ChatHistory as string;
-    var scenario = ViewBag.Scenario as string;
-    var sessionData = ViewBag.SessionData;
+    var users = ViewBag.Users as List<Microsoft.AspNetCore.Identity.IdentityUser>;
 }
 <div class="container mt-5">
     <h2 class="mb-4">Admin Paneli</h2>
-    <div class="mb-3">
-        <strong>Senaryo:</strong> @scenario
+    <div class="mb-5">
+        <h4>Kayıtlı Kullanıcılar</h4>
+        <table class="table table-sm table-hover table-bordered w-auto">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Email</th>
+                    <th>Kullanıcı Adı</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (users != null)
+                {
+                    int i = 1;
+                    foreach (var user in users)
+                    {
+                        <tr>
+                            <td>@i</td>
+                            <td>@user.Email</td>
+                            <td>@user.UserName</td>
+                        </tr>
+                        i++;
+                    }
+                }
+            </tbody>
+        </table>
     </div>
-    <div class="mb-3">
-        <strong>Session Bilgileri:</strong>
-        <pre>@Newtonsoft.Json.JsonConvert.SerializeObject(sessionData, Newtonsoft.Json.Formatting.Indented)</pre>
-    </div>
-    <div>
-        <strong>Chat Geçmişi:</strong>
-        <pre>@chatHistory</pre>
-    </div>
+    <table class="table table-bordered table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Kullanıcı</th>
+                <th>Senaryo</th>
+                <th>Oluşturulma</th>
+                <th>Chat Geçmişi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.UserId</td>
+                    <td>@item.Scenario</td>
+                    <td>@item.CreatedAt.ToString("g")</td>
+                    <td><pre>@item.History</pre></td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div> 

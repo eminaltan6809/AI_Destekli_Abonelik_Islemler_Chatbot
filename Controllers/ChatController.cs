@@ -2,11 +2,27 @@ using Microsoft.AspNetCore.Mvc;
 using AI_Destekli_Abonelik_Chatbot.Models;
 using Newtonsoft.Json;
 using AI_Destekli_Abonelik_Chatbot.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace AI_Destekli_Abonelik_Chatbot.Controllers
 {
+    [Authorize]
     public class ChatController : Controller
     {
+        private readonly AppDbContext _db;
+        public ChatController(AppDbContext db) { _db = db; }
+        public override void OnActionExecuting(ActionExecutingContext context)
+        {
+            if (!User.Identity.IsAuthenticated)
+            {
+                if (context.Controller is Controller controller)
+                    controller.TempData["LoginRequired"] = true;
+                context.Result = new RedirectToActionResult("Login", "Account", null);
+            }
+            base.OnActionExecuting(context);
+        }
         [HttpPost]
         public async Task<IActionResult> SendMessage([FromBody] ChatMessageDto input)
         {
@@ -60,17 +76,43 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             var reply = await GptService.GetReplyAsync(history, scenario);
             history += $"Bot: {reply}\n";
             HttpContext.Session.SetString("ChatHistory", history);
+            // Chat geçmişini veritabanına kaydet
+            var userId = User.Identity != null && User.Identity.IsAuthenticated ? User.Identity.Name : HttpContext.Session.Id;
+            _db.ChatHistories.Add(new ChatHistory
+            {
+                UserId = userId,
+                Scenario = scenario,
+                History = history
+            });
+            await _db.SaveChangesAsync();
             return Json(new { reply });
         }
 
         [HttpGet]
         public IActionResult Start(ChatScenario scenario)
         {
-            // Senaryoyu sessiona kaydet
+            // Senaryoya göre ilk mesajı belirle
+            string firstBotMessage = scenario switch
+            {
+                ChatScenario.FaturaOdemesi => "Lütfen T.C. Kimlik numaranızı giriniz (11 haneli).",
+                ChatScenario.AbonelikIptali => "Lütfen abone numaranızı giriniz (en az 6 rakam).",
+                ChatScenario.FaturaItirazi => "Lütfen fatura numaranızı giriniz.",
+                ChatScenario.ElektrikArizasi => "Lütfen adresinizi veya abone numaranızı giriniz.",
+                _ => "Size nasıl yardımcı olabilirim?"
+            };
+            string initialHistory = $"Bot: {firstBotMessage}\n";
             HttpContext.Session.SetString("Scenario", scenario.ToString());
-            HttpContext.Session.SetString("ChatHistory", "");
+            HttpContext.Session.SetString("ChatHistory", initialHistory);
             ViewBag.Scenario = scenario;
             return View("Chat");
+        }
+
+        [HttpGet]
+        public IActionResult MyHistory()
+        {
+            var userId = User.Identity != null && User.Identity.IsAuthenticated ? User.Identity.Name : HttpContext.Session.Id;
+            var histories = _db.ChatHistories.Where(x => x.UserId == userId).OrderByDescending(x => x.CreatedAt).ToList();
+            return View(histories);
         }
 
         // Chat işlemleri ve GPT entegrasyonu burada olacak (devamında eklenecek)

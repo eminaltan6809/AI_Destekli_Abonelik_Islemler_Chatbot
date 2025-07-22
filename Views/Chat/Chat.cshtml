@@ -1,10 +1,23 @@
 @{
     ViewData["Title"] = "Chatbot";
     var scenario = ViewBag.Scenario;
+    var chatHistory = Context.Session.GetString("ChatHistory") ?? "";
 }
 <div class="container mt-5">
     <h2 class="mb-4 text-center">@scenario senaryosu için Chatbot</h2>
-    <div id="chatbox" class="border rounded p-3 mb-3" style="height: 350px; overflow-y: auto; background: #f8f9fa;"></div>
+    <div id="chatbox" class="border rounded p-3 mb-3" style="height: 350px; overflow-y: auto; background: #f8f9fa;">
+        @foreach (var line in chatHistory.Split('\n'))
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                var isBot = line.StartsWith("Bot:");
+                <div class="mb-2 @(isBot ? "text-start" : "text-end")">
+                    <span class="badge bg-@(isBot ? "secondary" : "primary")">@(isBot ? "Chatbot" : "Siz"):</span>
+                    <span>@line.Substring(line.IndexOf(":") + 1).Trim()</span>
+                </div>
+            }
+        }
+    </div>
     <form id="chatForm" class="d-flex">
         <input type="text" id="userInput" class="form-control me-2" placeholder="Mesajınızı yazın..." autocomplete="off" />
         <button type="submit" class="btn btn-primary">Gönder</button>

@@ -1,0 +1,36 @@
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+<h2>Kayıt Ol</h2>
+<form method="post">
+    <div class="mb-3">
+        <label>Email</label>
+        <input type="email" name="email" class="form-control" required />
+    </div>
+    <div class="mb-3 position-relative">
+        <label>Şifre</label>
+        <input type="password" name="password" id="registerPassword" class="form-control pr-5" required />
+        <span style="position:absolute;top:38px;right:15px;cursor:pointer;" onclick="togglePassword('registerPassword', this)">
+            <svg id="eyeIconRegister" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="gray" class="bi bi-eye" viewBox="0 0 16 16">
+                <path d="M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.133 13.133 0 0 1 1.172 8z"/>
+                <path d="M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/>
+            </svg>
+        </span>
+    </div>
+    <button type="submit" class="btn btn-primary">Kayıt Ol</button>
+    @if (ViewBag.Error != null) { <div class="text-danger mt-2">@ViewBag.Error</div> }
+</form>
+@section Scripts {
+<script>
+function togglePassword(inputId, iconSpan) {
+    var input = document.getElementById(inputId);
+    if (input.type === "password") {
+        input.type = "text";
+        iconSpan.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='gray' class='bi bi-eye-slash' viewBox='0 0 16 16'><path d='M13.359 11.238C14.06 10.47 14.682 9.607 15.107 8.97a.5.5 0 0 0 0-.582C14.319 7.387 11.273 3.5 8 3.5c-.654 0-1.28.07-1.872.2l1.12 1.12A5.5 5.5 0 0 1 8 4.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.335.48-.83 1.12-1.465 1.755-.37.37-.77.72-1.164 1.045l1.16 1.16z'/><path d='M11.354 12.354a.5.5 0 0 1-.708 0l-8-8a.5.5 0 1 1 .708-.708l8 8a.5.5 0 0 1 0 .708z'/></svg>`;
+    } else {
+        input.type = "password";
+        iconSpan.innerHTML = `<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20' fill='gray' class='bi bi-eye' viewBox='0 0 16 16'><path d='M16 8s-3-5.5-8-5.5S0 8 0 8s3 5.5 8 5.5S16 8 16 8zM1.173 8a13.133 13.133 0 0 1 1.66-2.043C4.12 4.668 5.88 3.5 8 3.5c2.12 0 3.879 1.168 5.168 2.457A13.133 13.133 0 0 1 14.828 8c-.058.087-.122.183-.195.288-.335.48-.83 1.12-1.465 1.755C11.879 11.332 10.119 12.5 8 12.5c-2.12 0-3.879-1.168-5.168-2.457A13.133 13.133 0 0 1 1.172 8z'/><path d='M8 5.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5zM8 9a1 1 0 1 1 0-2 1 1 0 0 1 0 2z'/></svg>`;
+    }
+}
+</script>
+} 
