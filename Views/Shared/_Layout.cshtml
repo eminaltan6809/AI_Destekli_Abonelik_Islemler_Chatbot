@@ -26,9 +26,12 @@
                         <li class="nav-item">
                             <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link fs-5" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
-                        </li>
+                        @if (User.Identity != null && User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link fs-5" asp-area="" asp-controller="Admin" asp-action="Index">Admin</a>
+                            </li>
+                        }
                         <li class="nav-item">
                             <a class="nav-link fs-5" asp-area="" asp-controller="Home" asp-action="Contact">İletişim</a>
                         </li>
@@ -51,15 +54,7 @@
                                 </form>
                             </li>
                         }
-                        else
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link fs-5" asp-controller="Account" asp-action="Login">Giriş Yap</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link fs-5" asp-controller="Account" asp-action="Register">Kayıt Ol</a>
-                            </li>
-                        }
+                        @* Giriş yapılmamışsa hiçbir şey gösterme *@
                     </ul>
                 </div>
             </div>

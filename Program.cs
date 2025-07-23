@@ -76,6 +76,18 @@ using (var scope = app.Services.CreateScope())
     }
     if (!await userManager.IsInRoleAsync(adminUser, adminRole))
         await userManager.AddToRoleAsync(adminUser, adminRole);
+    // Admin claimlerini güncelle
+    var claims = await userManager.GetClaimsAsync(adminUser);
+    var claimList = new[] {
+        new System.Security.Claims.Claim("FullName", "Emin ALTAN"),
+        new System.Security.Claims.Claim("TcKimlik", "27010223120"),
+        new System.Security.Claims.Claim("AboneNo", "123456")
+    };
+    foreach (var claim in claimList) {
+        var existing = claims.FirstOrDefault(c => c.Type == claim.Type);
+        if (existing != null) await userManager.RemoveClaimAsync(adminUser, existing);
+        await userManager.AddClaimAsync(adminUser, claim);
+    }
 }
 
 app.Run();

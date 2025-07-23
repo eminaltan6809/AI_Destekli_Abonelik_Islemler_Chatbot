@@ -5,22 +5,24 @@ using AI_Destekli_Abonelik_Chatbot.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.AspNetCore.Identity;
 
 namespace AI_Destekli_Abonelik_Chatbot.Controllers
 {
-    [Authorize]
     public class ChatController : Controller
     {
         private readonly AppDbContext _db;
-        public ChatController(AppDbContext db) { _db = db; }
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly SignInManager<IdentityUser> _signInManager;
+        public ChatController(AppDbContext db, UserManager<IdentityUser> userManager, SignInManager<IdentityUser> signInManager)
+        {
+            _db = db;
+            _userManager = userManager;
+            _signInManager = signInManager;
+        }
         public override void OnActionExecuting(ActionExecutingContext context)
         {
-            if (!User.Identity.IsAuthenticated)
-            {
-                if (context.Controller is Controller controller)
-                    controller.TempData["LoginRequired"] = true;
-                context.Result = new RedirectToActionResult("Login", "Account", null);
-            }
+            // Giriş zorunluluğu kaldırıldı
             base.OnActionExecuting(context);
         }
         [HttpPost]
@@ -28,7 +30,83 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
         {
             if (string.IsNullOrWhiteSpace(input.Message))
                 return Json(new { reply = "Lütfen bir mesaj giriniz." });
+
             var history = HttpContext.Session.GetString("ChatHistory") ?? "";
+
+            // Kullanıcı giriş yapmamışsa login/register işlemlerini chatbox üzerinden yap
+            if (!User.Identity.IsAuthenticated)
+            {
+                var msg = input.Message.Trim();
+                if (msg.StartsWith("giriş:", StringComparison.OrdinalIgnoreCase))
+                {
+                    // giriş: email, şifre
+                    var parts = msg.Substring(6).Split(',');
+                    if (parts.Length != 2)
+                    {
+                        history += "Bot: Lütfen 'giriş: email, şifre' formatında yazınız.\n";
+                        HttpContext.Session.SetString("ChatHistory", history);
+                        return Json(new { reply = "Lütfen 'giriş: email, şifre' formatında yazınız.", history });
+                    }
+                    var email = parts[0].Trim();
+                    var password = parts[1].Trim();
+                    var result = await _signInManager.PasswordSignInAsync(email, password, false, false);
+                    if (result.Succeeded)
+                    {
+                        history += "Bot: Giriş başarılı! Hangi işlemi yapmak istiyorsunuz? 1- Fatura Ödemesi, 2- Abonelik İptali, 3- Fatura İtirazı, 4- Elektrik Arızası, 5- Diğer\n";
+                        HttpContext.Session.SetString("ChatHistory", history);
+                        return Json(new { reply = "Giriş başarılı! Hangi işlemi yapmak istiyorsunuz? 1- Fatura Ödemesi, 2- Abonelik İptali, 3- Fatura İtirazı, 4- Elektrik Arızası, 5- Diğer", history });
+                    }
+                    history += "Bot: Giriş başarısız. Lütfen bilgilerinizi kontrol edin.\n";
+                    HttpContext.Session.SetString("ChatHistory", history);
+                    return Json(new { reply = "Giriş başarısız. Lütfen bilgilerinizi kontrol edin.", history });
+                }
+                else if (msg.StartsWith("kayıt:", StringComparison.OrdinalIgnoreCase))
+                {
+                    // kayıt: email, ad soyad, tc kimlik, abone no, şifre
+                    var parts = msg.Substring(6).Split(',');
+                    if (parts.Length != 5)
+                    {
+                        history += "Bot: Lütfen 'kayıt: email, ad soyad, tc kimlik, abone no, şifre' formatında yazınız.\n";
+                        HttpContext.Session.SetString("ChatHistory", history);
+                        return Json(new { reply = "Lütfen 'kayıt: email, ad soyad, tc kimlik, abone no, şifre' formatında yazınız.", history });
+                    }
+                    var email = parts[0].Trim();
+                    var fullName = parts[1].Trim();
+                    var tcKimlik = parts[2].Trim();
+                    var aboneNo = parts[3].Trim();
+                    var password = parts[4].Trim();
+                    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(tcKimlik) || string.IsNullOrWhiteSpace(aboneNo) || string.IsNullOrWhiteSpace(password))
+                    {
+                        history += "Bot: Tüm alanları doldurmanız gerekmektedir.\n";
+                        HttpContext.Session.SetString("ChatHistory", history);
+                        return Json(new { reply = "Tüm alanları doldurmanız gerekmektedir.", history });
+                    }
+                    var user = new IdentityUser { UserName = email, Email = email };
+                    var result = await _userManager.CreateAsync(user, password);
+                    if (result.Succeeded)
+                    {
+                        await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("FullName", fullName));
+                        await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("TcKimlik", tcKimlik));
+                        await _userManager.AddClaimAsync(user, new System.Security.Claims.Claim("AboneNo", aboneNo));
+                        await _signInManager.SignInAsync(user, isPersistent: false);
+                        history += "Bot: Kayıt başarılı! Hangi işlemi yapmak istiyorsunuz? 1- Fatura Ödemesi, 2- Abonelik İptali, 3- Fatura İtirazı, 4- Elektrik Arızası, 5- Diğer\n";
+                        HttpContext.Session.SetString("ChatHistory", history);
+                        return Json(new { reply = "Kayıt başarılı! Hangi işlemi yapmak istiyorsunuz? 1- Fatura Ödemesi, 2- Abonelik İptali, 3- Fatura İtirazı, 4- Elektrik Arızası, 5- Diğer", history });
+                    }
+                    var errorMsg = string.Join(" ", result.Errors.Select(e => e.Description));
+                    history += $"Bot: {errorMsg}\n";
+                    HttpContext.Session.SetString("ChatHistory", history);
+                    return Json(new { reply = errorMsg, history });
+                }
+                else
+                {
+                    history += "Bot: Hoş geldiniz! Giriş yapmak için 'giriş: email, şifre' veya kayıt olmak için 'kayıt: email, ad soyad, tc kimlik, abone no, şifre' yazınız.\n";
+                    HttpContext.Session.SetString("ChatHistory", history);
+                    return Json(new { reply = "Hoş geldiniz! Giriş yapmak için 'giriş: email, şifre' veya kayıt olmak için 'kayıt: email, ad soyad, tc kimlik, abone no, şifre' yazınız.", history });
+                }
+            }
+
+            // Kullanıcı giriş yaptıysa normal chat akışı
             var scenario = HttpContext.Session.GetString("Scenario") ?? "Diger";
             var sessionDataStr = HttpContext.Session.GetString("SessionData");
             var sessionData = string.IsNullOrEmpty(sessionDataStr) ? new ChatSessionData() : JsonConvert.DeserializeObject<ChatSessionData>(sessionDataStr);
@@ -45,7 +123,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                             bilgiAdimi = "T.C. Kimlik numarası doğrulanamadı. Lütfen tekrar giriniz (ör: 12345678901).";
                             history += $"Bot: {bilgiAdimi}\n";
                             HttpContext.Session.SetString("ChatHistory", history);
-                            return Json(new { reply = bilgiAdimi });
+                            return Json(new { reply = bilgiAdimi, history });
                         }
                     }
                     else
@@ -53,7 +131,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                         bilgiAdimi = "Lütfen T.C. Kimlik numaranızı giriniz (11 haneli).";
                         history += $"Bot: {bilgiAdimi}\n";
                         HttpContext.Session.SetString("ChatHistory", history);
-                        return Json(new { reply = bilgiAdimi });
+                        return Json(new { reply = bilgiAdimi, history });
                     }
                 }
                 else if (string.IsNullOrEmpty(sessionData.AboneNo))
@@ -67,7 +145,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                         bilgiAdimi = "Lütfen abone numaranızı giriniz (en az 6 rakam).";
                         history += $"Bot: {bilgiAdimi}\n";
                         HttpContext.Session.SetString("ChatHistory", history);
-                        return Json(new { reply = bilgiAdimi });
+                        return Json(new { reply = bilgiAdimi, history });
                     }
                 }
             }
@@ -85,25 +163,29 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 History = history
             });
             await _db.SaveChangesAsync();
-            return Json(new { reply });
+            return Json(new { reply, history });
         }
 
         [HttpGet]
-        public IActionResult Start(ChatScenario scenario)
+        public IActionResult Chat()
         {
-            // Senaryoya göre ilk mesajı belirle
-            string firstBotMessage = scenario switch
+            // Chat geçmişini her zaman göster
+            string initialHistory = HttpContext.Session.GetString("ChatHistory");
+            if (string.IsNullOrEmpty(initialHistory))
             {
-                ChatScenario.FaturaOdemesi => "Lütfen T.C. Kimlik numaranızı giriniz (11 haneli).",
-                ChatScenario.AbonelikIptali => "Lütfen abone numaranızı giriniz (en az 6 rakam).",
-                ChatScenario.FaturaItirazi => "Lütfen fatura numaranızı giriniz.",
-                ChatScenario.ElektrikArizasi => "Lütfen adresinizi veya abone numaranızı giriniz.",
-                _ => "Size nasıl yardımcı olabilirim?"
-            };
-            string initialHistory = $"Bot: {firstBotMessage}\n";
-            HttpContext.Session.SetString("Scenario", scenario.ToString());
-            HttpContext.Session.SetString("ChatHistory", initialHistory);
-            ViewBag.Scenario = scenario;
+                if (!User.Identity.IsAuthenticated)
+                {
+                    string firstBotMessage = "Hoş geldiniz! Giriş yapmak için 'giriş: email, şifre' veya kayıt olmak için 'kayıt: email, ad soyad, tc kimlik, abone no, şifre' yazınız.";
+                    initialHistory = $"Bot: {firstBotMessage}\n";
+                }
+                else
+                {
+                    // Giriş yapılmışsa geçmişi 'Hangi işlemi yapmak istiyorsunuz?' mesajı ile başlat
+                    string firstBotMessage = "Hangi işlemi yapmak istiyorsunuz? 1- Fatura Ödemesi, 2- Abonelik İptali, 3- Fatura İtirazı, 4- Elektrik Arızası, 5- Diğer";
+                    initialHistory = $"Bot: {firstBotMessage}\n";
+                }
+                HttpContext.Session.SetString("ChatHistory", initialHistory);
+            }
             return View("Chat");
         }
 

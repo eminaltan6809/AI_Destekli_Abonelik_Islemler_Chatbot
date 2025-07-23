@@ -15,6 +15,8 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
         public AdminController(AppDbContext db, UserManager<IdentityUser> userManager) { _db = db; _userManager = userManager; }
         public IActionResult Index()
         {
+            if (!User.Identity.IsAuthenticated || !User.IsInRole("Admin"))
+                return RedirectToAction("AccessDenied", "Account");
             var histories = _db.ChatHistories.OrderByDescending(x => x.CreatedAt).ToList();
             var users = _userManager.Users.ToList();
             ViewBag.Users = users;

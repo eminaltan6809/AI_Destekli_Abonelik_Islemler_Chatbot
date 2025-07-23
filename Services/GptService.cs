@@ -16,8 +16,8 @@ namespace AI_Destekli_Abonelik_Chatbot.Services
         public static void Initialize(IConfiguration config)
         {
             if (_initialized) return;
-            _apiKey = config["OpenAI:ApiKey"];
-            _model = config["OpenAI:Model"];
+            _apiKey = config["AIMLAPI:ApiKey"];
+            _model = config["AIMLAPI:Model"];
             _initialized = true;
         }
 
@@ -45,16 +45,16 @@ namespace AI_Destekli_Abonelik_Chatbot.Services
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
                 var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("https://api.openai.com/v1/chat/completions", content);
+                var response = await client.PostAsync("https://api.aimlapi.com/v1/chat/completions", content);
                 var json = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
-                    return $"OpenAI API hatası: {response.StatusCode} - {json}";
+                    return $"AIMLAPI API hatası: {response.StatusCode} - {json}";
                 dynamic obj = JsonConvert.DeserializeObject(json);
                 return obj.choices[0].message.content.ToString();
             }
             catch (Exception ex)
             {
-                return $"OpenAI API bağlantı hatası: {ex.Message}";
+                return $"AIMLAPI API bağlantı hatası: {ex.Message}";
             }
         }
     }

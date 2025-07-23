@@ -17,32 +17,18 @@ public class HomeController : Controller
 
     public override void OnActionExecuting(ActionExecutingContext context)
     {
-        if (!User.Identity.IsAuthenticated)
-        {
-            if (context.Controller is Controller controller)
-                controller.TempData["LoginRequired"] = true;
-            context.Result = new RedirectToActionResult("Login", "Account", null);
-        }
-        base.OnActionExecuting(context);
+        // Giriş zorunluluğu kaldırıldı
     }
 
     public IActionResult Index()
     {
-        if (!User.Identity.IsAuthenticated)
-        {
-            TempData["LoginRequired"] = true;
-            return RedirectToAction("Login", "Account");
-        }
-        return View();
+        // Giriş zorunluluğu kaldırıldı, herkes chatbox'a erişebilir
+        return RedirectToAction("Chat", "Chat");
     }
 
     public IActionResult Privacy()
     {
-        if (!User.Identity.IsAuthenticated)
-        {
-            TempData["LoginRequired"] = true;
-            return RedirectToAction("Login", "Account");
-        }
+        // Giriş zorunluluğu kaldırıldı
         return View();
     }
 
