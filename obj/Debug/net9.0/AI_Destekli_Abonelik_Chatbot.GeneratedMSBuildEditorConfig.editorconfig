@@ -28,28 +28,12 @@ build_property._RazorSourceGeneratorDebug =
 build_property.EffectiveAnalysisLevelStyle = 9.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Account/AccessDenied.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxBY2Nlc3NEZW5pZWQuY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Account/Login.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxMb2dpbi5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Account/Register.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Admin/Index.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWRtaW5cSW5kZXguY3NodG1s
-build_metadata.AdditionalFiles.CssScope = 
-
 [C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Chat/Chat.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFxDaGF0LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Chat/MyHistory.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFxNeUhpc3RvcnkuY3NodG1s
+[C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Chat/History.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ2hhdFxIaXN0b3J5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/bjk-6/Desktop/AI Destekli Abonelik Sistemi Chatbot Demo/AI_Destekli_Abonelik_Chatbot/Views/Home/Contact.cshtml]

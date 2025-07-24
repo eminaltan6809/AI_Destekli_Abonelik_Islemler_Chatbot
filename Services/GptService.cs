@@ -16,15 +16,15 @@ namespace AI_Destekli_Abonelik_Chatbot.Services
         public static void Initialize(IConfiguration config)
         {
             if (_initialized) return;
-            _apiKey = config["AIMLAPI:ApiKey"];
-            _model = config["AIMLAPI:Model"];
+            _apiKey = config["Deepseek:ApiKey"];
+            _model = config["Deepseek:Model"];
             _initialized = true;
         }
 
         public static async Task<string> GetReplyAsync(string history, string scenario)
         {
             if (!_initialized || string.IsNullOrWhiteSpace(_apiKey) || string.IsNullOrWhiteSpace(_model))
-                return "OpenAI API anahtarı veya model ayarı eksik. Lütfen yöneticinize başvurun.";
+                return "Deepseek API anahtarı veya model ayarı eksik. Lütfen yöneticinize başvurun.";
             if (string.IsNullOrWhiteSpace(history))
                 history = "Kullanıcı henüz bir mesaj göndermedi.";
             if (string.IsNullOrWhiteSpace(scenario))
@@ -45,16 +45,16 @@ namespace AI_Destekli_Abonelik_Chatbot.Services
                 using var client = new HttpClient();
                 client.DefaultRequestHeaders.Add("Authorization", $"Bearer {_apiKey}");
                 var content = new StringContent(JsonConvert.SerializeObject(requestBody), Encoding.UTF8, "application/json");
-                var response = await client.PostAsync("https://api.aimlapi.com/v1/chat/completions", content);
+                var response = await client.PostAsync("https://api.deepseek.com/v1/chat/completions", content);
                 var json = await response.Content.ReadAsStringAsync();
                 if (!response.IsSuccessStatusCode)
-                    return $"AIMLAPI API hatası: {response.StatusCode} - {json}";
+                    return $"Deepseek API hatası: {response.StatusCode} - {json}";
                 dynamic obj = JsonConvert.DeserializeObject(json);
                 return obj.choices[0].message.content.ToString();
             }
             catch (Exception ex)
             {
-                return $"AIMLAPI API bağlantı hatası: {ex.Message}";
+                return $"Deepseek API bağlantı hatası: {ex.Message}";
             }
         }
     }
