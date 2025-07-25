@@ -15,7 +15,6 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="9.0.7" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="OpenAI" Version="1.6.5" />
   </ItemGroup>
 
 </Project>

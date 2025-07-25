@@ -6,5 +6,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Models
         public long TcKimlikNo { get; set; }
         public int AboneNo { get; set; }
         public long Telefon { get; set; }
+        public int FaturaId { get; set; }
+        public string Adres { get; set; } = string.Empty;
     }
 } 

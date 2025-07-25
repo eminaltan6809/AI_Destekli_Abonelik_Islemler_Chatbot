@@ -154,7 +154,6 @@ C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abo
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.Extensions.Primitives.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Mono.TextTemplating.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Newtonsoft.Json.dll
-C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\OpenAI_API.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\SQLitePCLRaw.batteries_v2.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\SQLitePCLRaw.core.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\SQLitePCLRaw.provider.e_sqlite3.dll

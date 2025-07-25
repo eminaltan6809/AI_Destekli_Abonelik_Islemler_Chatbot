@@ -26,6 +26,6 @@ app.MapControllerRoute(
     pattern: "{controller=Home}/{action=Index}/{id?}")
     .WithStaticAssets();
 
-GptService.Initialize(app.Configuration);
+GptService.Initialize(app.Configuration); 
 
 app.Run();
