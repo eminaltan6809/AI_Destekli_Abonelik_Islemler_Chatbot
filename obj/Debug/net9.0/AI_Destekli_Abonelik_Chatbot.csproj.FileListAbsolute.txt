@@ -256,7 +256,6 @@ C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abo
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\scopedcss\bundle\AI_Destekli_Abonelik_Chatbot.styles.css
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\scopedcss\projectbundle\AI_Destekli_Abonelik_Chatbot.bundle.scp.css
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\p506mfewq0-61n19gt1b8.gz
-C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\foqu03bq2h-c91jodcfwy.gz
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\pkthwwhlq2-xtxxf3hu2r.gz
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\tsubxqwbb5-bqjiyaj88i.gz
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\h227g91n05-c2jlpeoesf.gz
@@ -332,3 +331,4 @@ C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abo
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\az0wazaa6m-l7mf1mz0bg.gz
+C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\foqu03bq2h-08fdt7alkm.gz

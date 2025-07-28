@@ -7,27 +7,43 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         const message = userInput.value.trim();
         if (!message) return;
+        
+        // Kullanıcı mesajını ekle
         appendMessage('Siz', message, 'user');
         userInput.value = '';
         chatbox.scrollTop = chatbox.scrollHeight;
-        const response = await fetch('/Chat/SendMessage', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ message })
-        });
-        if (response.ok) {
-            const data = await response.json();
-            appendMessage('Chatbot', data.reply, 'bot');
-            chatbox.scrollTop = chatbox.scrollHeight;
-        } else {
-            appendMessage('Chatbot', 'Bir hata oluştu.', 'bot');
+        
+        try {
+            const response = await fetch('/Chat/SendMessage', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            
+            if (response.ok) {
+                const data = await response.json();
+                appendMessage('Chatbot', data.reply, 'bot');
+                chatbox.scrollTop = chatbox.scrollHeight;
+            } else {
+                appendMessage('Chatbot', 'Bir hata oluştu. Lütfen tekrar deneyiniz.', 'bot');
+            }
+        } catch (error) {
+            appendMessage('Chatbot', 'Bağlantı hatası oluştu. Lütfen tekrar deneyiniz.', 'bot');
         }
     });
 
     function appendMessage(sender, text, type) {
         const msgDiv = document.createElement('div');
-        msgDiv.className = 'mb-2 ' + (type === 'user' ? 'text-end' : 'text-start');
-        msgDiv.innerHTML = `<span class="badge bg-${type === 'user' ? 'primary' : 'secondary'}">${sender}:</span> <span>${text}</span>`;
+        msgDiv.className = 'd-flex ' + (type === 'user' ? 'justify-content-end' : 'justify-content-start');
+        
+        const bubbleDiv = document.createElement('div');
+        bubbleDiv.className = 'chat-bubble ' + (type === 'user' ? 'user' : 'bot');
+        
+        const span = document.createElement('span');
+        span.textContent = text;
+        bubbleDiv.appendChild(span);
+        msgDiv.appendChild(bubbleDiv);
+        
         chatbox.appendChild(msgDiv);
     }
 }); 
