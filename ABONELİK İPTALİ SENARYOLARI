@@ -1,0 +1,156 @@
+Abonelik Sonlandırma Süreci – Chatbot & Voice Bot Demo
+1. Genel Bilgiler
+● Abonelik sonlandırma işlemleri öncelikle abone sahibi ile gerçekleştirilir.
+● KVKK gereği, sadece abone sahibi veya yetkili kişiler işlem yapabilir.
+● Bazı abone grupları (şantiye, vefat eden kişi abonelikleri) özel prosedürler içerir ve canlı desteğe yönlendirilir.
+● Bot, sistemsel hata durumunda veya karmaşık işlemlerde canlı desteğe aktarım yapar.
+● Sözleşme hesap numarası faturanın sağ üst köşesinde yer almaktadır.
+● Abonelik sonlandırma işlemi gerçekleştiğinde abone sahibine SMS ile bilgi verilmektedir.
+● Abonelikte ödenmemiş fatura borcu varsa abonelik sonlandırma işlemi yapılmaz. Bu sebeple aboneliğe ulaşıldıktan sonra borç sorgulaması devreye girer.
+● Aboneliğin sonlandırılabilmesi için abonelik durum kodunun “Normal” olması gerekir. Farklı durum kodlarında canlı desteğe yönlendirme yapılmalıdır.
+Genel Bilgilendirme Yapılacak Durumlar;
+Abonelik Sonlandırma İçin Gerekli Evraklar;
+● Sayaç seri numarası ya da abone numarası veya sözleşme hesap numarası
+● Gerçek kişi başvurusunda kimlik
+● Tüzel kişi başvurusunda yetki belgesi, imza sirküleri, vekaletname ve şirket kaşesi, şirket adına ait IBAN numarası
+● Abone sahibinin adına kayıtlı IBAN numarası
+Güvence Bedeli İade Süreci;
+Güvence bedeli; müşterinin abonelik başlatma esnasında yatırdığı depozito bedelidir. Güvence bedeli TEFE-TÜFE endeksli olarak müşteri aboneliğini sonlandırırken vermiş olduğu IBAN numarasına yatırılır.
+IBAN numarasına yatırılabilmesi için abone sahibinin isim ve soy ismi ile IBAN numarasının isim soy isminin mutlaka eşleşiyor olması gerekir. Eğer eşleşmezse iade bankadan geri döner.
+Müşterinin kesme işlemi tamamlandıktan sonra güvence bedeli iadesi 5 iş günü içerisinde hesabına yatar.
+2. Senaryolar
+Senaryo 1: Abone Sahibi ile Sorunsuz Abonelik Sonlandırma
+● Müşterinin abone sahibi olup olmadığı sorgulanır.
+● Aboneliğe ulaşmak için sözleşme hesap numarası talep edilir ve abonelik bilgileri teyit edilir.
+● Aboneliğe ulaşıldıktan sonra gerçek kişi teyidi için; İsim-soy isim, T.C kimlik numarası, Baba adı ve doğum tarihi bilgileri ile müşteri doğrulaması yapılır.
+● Müşterinin sonlandırma talebi için enerji kesilme işlemi için 5 güne kadar tarih seçebilme şansı vardır. İstenilen sonlandırma tarihi alınır.
+● Güvence bedeli iadesi için IBAN talep edilir.
+● En kısa sürede ilgili tesisatın elektrikleri kesilir ve son tüketimler fatura edilip güvence bedelinden mahsup edilerek sözleşme sonlandırılır
+● İşlem tamamlanır.
+Örnek Yazışma;
+Chatbot: Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Evet, abone sahibiyim.
+Chatbot: Teşekkür ederim. Devam edebilmem için lütfen 106 ile başlayan 10 haneli sözleşme hesap numaranızı paylaşır mısınız?
+Müşteri: 1061234567
+Chatbot: Teşekkür ederim. Bilgilerinizi kontrol ediyorum… ⬛✓
+Abonelik bilgilerine ulaştım. Şimdi, sizin gerçekten abone sahibi olduğunuzu doğrulamamız gerekiyor. Lütfen aşağıdaki bilgileri sırasıyla paylaşır mısınız?
+’c ) Ad – Soyad
+)’ c T.C. Kimlik No
+)’ c Babanızın Adı
+’ c) Doğum Tarihiniz (GG/AA/YYYY)
+Müşteri:
+Tuba Hatipoğlu 12345678900
+Ahmet 06/12/1990
+Chatbot: Teşekkür ederim Tuba Hanım. Bilgileriniz başarıyla doğrulandı ⬛✓ Şimdi enerji kesme işlemi için bir tarih belirleyelim.
+f) Elektrik kesilmesini istediğiniz tarihi seçebilirsiniz (Bugünden itibaren 5 gün içinde bir tarih olmalı). Hangi tarihi tercih edersiniz?
+Müşteri: 21 Haziran 2025
+Chatbot: 21 Haziran için talebinizi aldım. HH•O Son olarak, güvence bedelinin iadesi için IBAN bilginizi alabilir miyim? (Lütfen başında TR olacak şekilde giriniz.)
+Müşteri: TR120006200000000123456789
+Chatbot: IBAN bilginiz başarıyla kaydedildi ⬛✓ Seçtiğiniz tarihte elektriğiniz kesilecek. Ardından son tüketim faturanızı oluşturacağız ve güvence bedelinizden düşerek sözleşmenizi resmi olarak
+sonlandıracağız. Kalan güvence bedeli tutarınız enerjiniz kesildikten sonra 5 iş günü içerisinde iletmiş olduğunuz IBAN numarasına yatırılıcaktır.
+İşleminiz başarıyla başlatıldı. Sonlandırma işleminiz gerçekleştiğinde size SMS ile bilgilendirme sağlanacaktır. Başka bir konuda yardımcı olabilir miyim? ●¨v
+Senaryo 2: Abone Sahibi ile Görüşüldü, Ancak Borç Var
+● Müşterinin abone sahibi olup olmadığı sorgulanır.
+● Aboneliğe ulaşmak için sözleşme hesap numarası talep edilir ve abonelik bilgileri teyit edilir.
+● Aboneliğe ulaşıldıktan sonra gerçek kişi teyidi için; İsim-soy isim, T.C kimlik numarası, Baba adı ve doğum tarihi bilgileri ile müşteri doğrulaması yapılır.
+● Sistemde borç sorgulaması yapılır.
+● Borç varsa, borç tutarı bildirilir.
+● “Borcunuzu ödedikten sonra tekrar işlem yapabilirsiniz” bilgisi verilir.
+● İşlem tamamlanmaz.
+Örnek Yazışma;
+Chatbot: Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Evet, abone sahibiyim.
+Chatbot: Teşekkür ederim. Devam edebilmem için lütfen 106 ile başlayan 10 haneli sözleşme hesap numaranızı paylaşır mısınız?
+Müşteri: 1061234567
+Chatbot: Bilgilerinize ulaşıyorum… ⬛✓ Şimdi kimlik doğrulamanızı gerçekleştireceğiz. Lütfen aşağıdaki bilgileri sırasıyla paylaşır mısınız?
+)’ c Ad – Soyad
+’)c T.C. Kimlik No
+c’) Babanızın Adı
+’ c) Doğum Tarihiniz (GG/AA/YYYY)
+Müşteri:
+Tuba Hatipoğlu 12345678900
+Ahmet
+06/12/1990
+Chatbot: Teşekkürler Tuba Hanım. Bilgileriniz başarıyla doğrulandı ⬛✓
+Şimdi sistemimizde borç kontrolü yapacağım, sizi çok kısa bir süre bekletiyorum...
+Chatbot:
+Bu abonelikle ilişkili ödenmemiş bir borç mevcut.
+wBQ:r<„ Güncel borç tutarınız: 812,47 TL
+Chatbot:
+Borcunuz ödendikten sonra abonelik sonlandırma işlemini tekrar başlatabiliriz.
+Ödemenizi mobil bankacılıktan, yüz-yüze ödeme kanalları ve N-Kolay Ödeme Merkezlerinden kolayca yapabilirsiniz.
+Chatbot:
+Şu anda işlemi devam ettiremiyorum. Ancak dilerseniz işlemi daha sonra kaldığınız yerden tekrar başlatabilirim.
+Yardımcı olabileceğim başka bir konu var mı?
+Senaryo 3: Sistemsel Hata Durumu
+● Müşterinin abone sahibi olup olmadığı sorgulanır.
+● Aboneliğe ulaşmak için sözleşme hesap numarası talep edilir ve abonelik bilgileri teyit edilir.
+● Aboneliğe ulaşıldıktan sonra gerçek kişi teyidi için; İsim-soy isim, T.C kimlik numarası, Baba adı ve doğum tarihi bilgileri ile müşteri doğrulaması yapılır.
+● İşlem sırasında sistemsel hata tespit edilir.
+● Müşteri bilgilendirilir ve canlı destek hattına aktarılır.
+Örnek Yazışma;
+Chatbot Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Evet
+Chatbot: Teşekkür ederim. Devam edebilmem için lütfen 106 ile başlayan 10 haneli sözleşme hesap numaranızı paylaşır mısınız?
+Müşteri: 1061234567
+Chatbot: Bilgilerinize ulaşıyorum… ⬛✓ Şimdi kimlik doğrulamanızı gerçekleştireceğiz. Lütfen aşağıdaki bilgileri sırasıyla paylaşır mısınız?
+)c ’ Ad – Soyad
+’c) T.C. Kimlik No
+)’ c Babanızın Adı
+’ c) Doğum Tarihiniz (GG/AA/YYYY)
+Müşteri:
+Tuba Hatipoğlu 12345678900
+Ahmet 06/12/1990
+Chatbot: Teşekkür ederim Tuba Hanım, bilgileriniz başarıyla doğrulandı ✓⬛ İşleminizi başlatıyorum…
+Chatbot:
+ị Şu anda sistemimizde teknik bir aksaklık oluştu. Ne yazık ki işlemi tamamlayamıyorum.
+Chatbot:
+Sizi daha fazla bekletmeden canlı destek ekibimize aktarıyorum. Oradaki arkadaşlarımız işleminizi hemen inceleyip yardımcı olacaklardır.
+Lütfen hatta kalın, birazdan bağlanacaksınız. ^ " "
+Senaryo 4: Abone Sahibi Dışında Birinin Talebi
+● Müşterinin abone sahibi olup olmadığı sorgulanır.
+● Arayan kişi abone sahibi değilse, KVKK gereği işlem yapılmaz.
+● Abonelik sahibi ya da yetkili kişi ile iletişime geçilmesi gerektiği belirtilir.
+Örnek Yazışma;
+Chatbot: Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Hayır, ben eşiyim.
+Chatbot: Anlayışınız için teşekkür ederim. Bu işlem kişisel bilgilere ve abonelik haklarına yönelik olduğu için, sadece abonelik sahibi ya da sistemimizde kayıtlı yetkili kişi ile devam edebiliyoruz.
+Chatbot: Bu nedenle şu an için işlemi başlatamıyorum. En kısa sürede abone sahibiyle iletişime geçilmesini rica ederim. Onunla birlikte işlemi hızla tamamlayabiliriz. ⬛✓⬛
+Chatbot: Başka bir konuda size yardımcı olabilirsem memnuniyetle buradayım. )t⋯
+Senaryo 6: Tüzel Abonelik Sonlandırma Talebi
+● Tüzel aboneliklerde Yetkili kişi sorgulaması gereklidir.
+● İşlem canlı destek tarafından yapılır.
+● Müşteri canlı desteğe yönlendirilir.
+Örnek Yazışma;
+Chatbot: Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Evet.
+Chatbot: Teşekkür ederim. Devam edebilmem için lütfen 106 ile başlayan 10 haneli sözleşme hesap numaranızı paylaşır mısınız?
+Müşteri: 1061234567
+Chatbot: Teşekkür ederim, kontrol ediyorum... 
+⬛✓⬛ Abonelik bilgilerine ulaşıldı.
+Chatbot: Bu abonelik, tüzel kişi (şirket) adına kayıtlı görünüyor.
+Chatbot: Tüzel abonelik işlemlerinde, yalnızca yetkili kişilerle ve özel doğrulama adımlarıyla işlem yapılabilmektedir.
+Bu işlem dijital asistan aracılığıyla gerçekleştirilememektedir.
+Chatbot: Sizi hemen canlı destek ekibimize aktarıyorum. İlgili temsilcimiz şirket bilgilerini kontrol ederek süreci yönetecektir. " ^"
+Chatbot: Lütfen hatta kalın, bağlantınız sağlanıyor...
+Senaryo 7: Vefat Eden Kişinin Abonelik Sonlandırma Talebi
+● Özel prosedür gerektirir. Vefat eden abonenin tek varisi varsa işlem canlı destek ile yapılabilir. Birden fazla varis olduğu durumlarda müşteri en yakın müşteri hizmetleri merkezine muvafakatname ile başvuru yapmalıdır.
+● Canlı destek ve ilgili birimlerle işlem yapılır. Müşteriye ilgili belgelerin ilgili departmanlar tarafından talep edileceği bilgisi verilir.
+● Müşteri canlı desteğe yönlendirilir.
+Örnek Yazışma;
+Chatbot: Merhaba, ben Dijital Asistanınız! $ Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?
+Müşteri: Hayır, abonelik sahibimiz vefat etti.
+Chatbot: Başınız sağ olsun. Böyle bir durumda işlemleri hassasiyetle ele alıyoruz I H: Size daha iyi yardımcı olabilmem için lütfen sözleşme hesap numarasını paylaşır mısınız?
+Müşteri: 1234567890
+Chatbot: Teşekkür ederim. Bilgilere ulaştım.
+Bu işlem, özel bir prosedür gerektiriyor. Size bazı bilgilendirmeleri yapmam gerekiyor.
+Chatbot:
+Eğer vefat eden abonenin tek varisi sizseniz, kimlik doğrulamanız sonrası işleminiz canlı destek ekibimiz tarafından uzaktan alınabilir. Tek varis olduğunuza dair belge sizden talep edilecektir.
+Ancak birden fazla yasal varis varsa, işlemin yapılabilmesi için tüm varislerin onayı gerekmektedir. Bu durumda en yakın müşteri hizmetleri merkezimize, muvafakatname ile başvurmanız gerekecektir. ˙ , ’‘f)
+Chatbot:
+Şu aşamada sizi canlı destek ekibimize aktarıyorum. Onlar, durumunuzu detaylıca dinleyip uygun yönlendirmeyi sağlayacaktır. " ^"
+3. Önemli Notlar
+● Bot hiçbir durumda abone sahibi doğrulaması yapmadan işlem yapmaz.
+● KVKK ve kişisel veri güvenliği kesinlikle önceliklidir.
+● İşlemin tamamlanamadığı her durumda müşteri net ve nazik şekilde bilgilendirilmelidir.
+● Canlı destek aktarımı hızlı ve kesintisiz olmalıdır.

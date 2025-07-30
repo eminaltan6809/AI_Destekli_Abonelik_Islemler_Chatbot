@@ -8,14 +8,82 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
 {
     public class ChatController : Controller
     {
-        // Sabit abone listesi
+        // Sabit abone listesi - Abonelik iptali senaryoları için güncellenmiş
         public static List<Abone> OrnekAboneler = new List<Abone>
         {
-            new Abone { IsimSoyisim = "Emin Altan", TcKimlikNo = 12345678901, AboneNo = 100001, Telefon = 5551112233, FaturaId = 11111, Adres = "İzmir" },
-            new Abone { IsimSoyisim = "Emir Alp Altan", TcKimlikNo = 23456789012, AboneNo = 100002, Telefon = 5552223344, FaturaId = 22222, Adres = "Aydın" },
-            new Abone { IsimSoyisim = "Ahmet Mehmet", TcKimlikNo = 34567890123, AboneNo = 100003, Telefon = 5553334455, FaturaId = 33333, Adres = "Didim" },
-            new Abone { IsimSoyisim = "Ali Veli", TcKimlikNo = 45678901234, AboneNo = 100004, Telefon = 5554445566, FaturaId = 44444, Adres = "Ankara" },
-            new Abone { IsimSoyisim = "Ayşe Fatma", TcKimlikNo = 56789012345, AboneNo = 100005, Telefon = 5555556677, FaturaId = 55555, Adres = "Samsun" }
+            // 1. Kullanıcı: Sorunsuz abonelik sonlandırma (herhangi bir sıkıntı yok)
+            new Abone 
+            { 
+                IsimSoyisim = "Emin Altan",
+                TcKimlikNo = 12345678901,
+                AboneNo = 1000000001,
+                Telefon = 5551112233,
+                FaturaId = 11111,
+                Adres = "İzmir, Konak Mahallesi, No:123",
+                BabaAdi = "Ahmet",
+                DogumTarihi = new DateTime(2004, 6, 15),
+                SozlesmeHesapNo = "1061234567",
+                IbanNumarasi = "TR120006200000000123456789",
+                GuvenceBedeli = 500.00m,
+                GuncelBorc = 0.00m,
+                AbonelikDurumu = "Normal",
+                TuzelAbonelik = false,
+                VefatDurumu = false,
+                SayacSeriNo = "S123456789",
+                AbonelikBaslangicTarihi = new DateTime(2020, 1, 1),
+                AktifAbonelik = true,
+                AbonelikTipi = "Konut"
+            },
+            
+            // 2. Kullanıcı: Borçlu abonelik (borç var)
+            new Abone 
+            { 
+                IsimSoyisim = "Emir Altan",
+                TcKimlikNo = 23456789012,
+                AboneNo = 1000000002,
+                Telefon = 5552223344,
+                FaturaId = 22222,
+                Adres = "Aydın, Efeler Mahallesi, No:456",
+                BabaAdi = "Mustafa",
+                DogumTarihi = new DateTime(2016, 3, 3),
+                SozlesmeHesapNo = "1062345678",
+                IbanNumarasi = "TR120006200000000234567890",
+                GuvenceBedeli = 750.00m,
+                GuncelBorc = 812.47m,
+                AbonelikDurumu = "Normal",
+                TuzelAbonelik = false,
+                VefatDurumu = false,
+                SayacSeriNo = "S234567890",
+                AbonelikBaslangicTarihi = new DateTime(2019, 6, 1),
+                AktifAbonelik = true,
+                AbonelikTipi = "Konut"
+            },
+            
+            // 3. Kullanıcı: Vefat eden kişi aboneliği
+            new Abone 
+            { 
+                IsimSoyisim = "Ali Veli", 
+                TcKimlikNo = 34567890123, 
+                AboneNo = 1000000003, 
+                Telefon = 5553334455, 
+                FaturaId = 33333, 
+                Adres = "Didim, Altınkum Mahallesi, No:789",
+                BabaAdi = "Hasan",
+                DogumTarihi = new DateTime(1955, 8, 22),
+                SozlesmeHesapNo = "1063456789",
+                IbanNumarasi = "TR120006200000000345678901",
+                GuvenceBedeli = 300.00m,
+                GuncelBorc = 0.00m,
+                AbonelikDurumu = "Normal",
+                TuzelAbonelik = false,
+                VefatDurumu = true,
+                VarisBilgisi = "Tek varis",
+                SayacSeriNo = "S345678901",
+                AbonelikBaslangicTarihi = new DateTime(2018, 3, 15),
+                AktifAbonelik = true,
+                AbonelikTipi = "Konut",
+                OzelDurumNotu = "Vefat eden kişi aboneliği"
+            }
         };
 
         // Konuşma geçmişi için statik liste
@@ -65,9 +133,16 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 return (true, "SERBEST_SOHBET_DEVAM", sessionData);
             }
 
-            // Standart akış doğrulaması
-            var validationResult = await ValidateStandardFlow(scenario, sessionData, userMessage);
-            return validationResult;
+            // Abonelik İptali için özel akış
+            if (scenario == "AbonelikIptali")
+            {
+                var validationResult = ValidateAbonelikIptali(sessionData, userMessage);
+                return await Task.FromResult(validationResult);
+            }
+
+            // Diğer senaryolar için standart akış doğrulaması
+            var standardValidationResult = await ValidateStandardFlow(scenario, sessionData, userMessage);
+            return standardValidationResult;
         }
 
         private async Task<(bool isValid, string validationMessage, ChatSessionData sessionData)> ValidateStandardFlow(string scenario, ChatSessionData sessionData, string userMessage)
@@ -170,11 +245,167 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
 
         private (bool isValid, string validationMessage, ChatSessionData sessionData) ValidateAbonelikIptali(ChatSessionData sessionData, string userMessage)
         {
-            if (string.IsNullOrEmpty(sessionData.IptalSebebi))
+            // 1. Adım: Abone sahibi mi sorusu
+            if (string.IsNullOrEmpty(sessionData.AboneSahibiMi))
             {
-                sessionData.IptalSebebi = userMessage.Trim();
-                return (true, "IPTAL_SEBEBI_KAYDEDILDI", sessionData);
+                var response = userMessage.Trim().ToLower();
+                if (response.Contains("evet") || response.Contains("yes"))
+                {
+                    sessionData.AboneSahibiMi = "Evet";
+                    sessionData.IslemAdimi = "AboneNo";
+                    return (true, "ABONE_SAHIBI_EVET", sessionData);
+                }
+                else if (response.Contains("hayır") || response.Contains("no") || response.Contains("değil"))
+                {
+                    sessionData.AboneSahibiMi = "Hayır";
+                    return (true, "ABONE_SAHIBI_HAYIR", sessionData);
+                }
+                else if (response.Contains("vefat") || response.Contains("öldü") || response.Contains("ölüm"))
+                {
+                    sessionData.AboneSahibiMi = "Vefat";
+                    sessionData.VefatDurumu = "Evet";
+                    return (true, "ABONE_SAHIBI_VEFAT", sessionData);
+                }
+                else if (response.Contains("şirket") || response.Contains("firma") || response.Contains("tüzel"))
+                {
+                    sessionData.AboneSahibiMi = "Şirket";
+                    sessionData.TuzelAbonelik = "Evet";
+                    return (true, "ABONE_SAHIBI_SIRKET", sessionData);
+                }
+                else
+                {
+                    return (false, "ABONE_SAHIBI_BELIRSIZ", sessionData);
+                }
             }
+
+            // 2. Adım: Abone numarası (sadece Evet durumunda)
+            if (sessionData.AboneSahibiMi == "Evet" && sessionData.IslemAdimi == "AboneNo" && string.IsNullOrEmpty(sessionData.AboneNo))
+            {
+                if (userMessage.Length == 10 && long.TryParse(userMessage, out var aboneNo))
+                {
+                    sessionData.AboneNo = aboneNo.ToString();
+                    sessionData.IslemAdimi = "IsimSoyisim";
+                    return (true, "ABONE_NO_DOGRULANDI", sessionData);
+                }
+                else
+                {
+                    return (false, "ABONE_NO_FORMAT_HATASI", sessionData);
+                }
+            }
+
+            // 2. Adım: İsim Soyisim
+            if (sessionData.IslemAdimi == "IsimSoyisim" && string.IsNullOrEmpty(sessionData.IsimSoyisim))
+            {
+                sessionData.IsimSoyisim = userMessage.Trim();
+                sessionData.IslemAdimi = "TcKimlikNo";
+                return (true, "ISIM_SOYISIM_KAYDEDILDI", sessionData);
+            }
+
+            // 3. Adım: T.C. Kimlik No
+            if (sessionData.IslemAdimi == "TcKimlikNo" && string.IsNullOrEmpty(sessionData.TcKimlikNo))
+            {
+                if (userMessage.Length == 11 && long.TryParse(userMessage, out var tcKimlik))
+                {
+                    sessionData.TcKimlikNo = tcKimlik.ToString();
+                    sessionData.IslemAdimi = "DogumTarihi";
+                    return (true, "TC_KIMLIK_KAYDEDILDI", sessionData);
+                }
+                else
+                {
+                    return (false, "TC_KIMLIK_FORMAT_HATASI", sessionData);
+                }
+            }
+
+            // 4. Adım: Doğum Tarihi
+            if (sessionData.IslemAdimi == "DogumTarihi" && string.IsNullOrEmpty(sessionData.DogumTarihi))
+            {
+                if (DateTime.TryParseExact(userMessage, "dd/MM/yyyy", null, System.Globalization.DateTimeStyles.None, out var dogumTarihi))
+                {
+                    // Tüm bilgileri kontrol et
+                    var abone = OrnekAboneler.FirstOrDefault(a => 
+                        a.AboneNo.ToString() == sessionData.AboneNo &&
+                        a.IsimSoyisim.Equals(sessionData.IsimSoyisim, StringComparison.OrdinalIgnoreCase) &&
+                        a.TcKimlikNo.ToString() == sessionData.TcKimlikNo &&
+                        a.DogumTarihi.ToString("dd/MM/yyyy") == dogumTarihi.ToString("dd/MM/yyyy"));
+                    
+                    if (abone == null)
+                    {
+                        return (false, "BILGILER_ESLESMIYOR", sessionData);
+                    }
+                    
+                    sessionData.DogumTarihi = dogumTarihi.ToString("dd/MM/yyyy");
+                    sessionData.IslemAdimi = "BorcKontrolu";
+                    return (true, "DOGUM_TARIHI_KAYDEDILDI", sessionData);
+                }
+                else
+                {
+                    return (false, "DOGUM_TARIHI_FORMAT_HATASI", sessionData);
+                }
+            }
+
+            // 5. Adım: Borç kontrolü
+            if (sessionData.IslemAdimi == "BorcKontrolu" && string.IsNullOrEmpty(sessionData.BorcKontrolu))
+            {
+                // Abone bilgilerini kontrol et
+                var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
+                if (abone != null)
+                {
+                    if (abone.GuncelBorc > 0)
+                    {
+                        sessionData.BorcKontrolu = "BorçVar";
+                        return (true, "BORC_VAR", sessionData);
+                    }
+                    else
+                    {
+                        sessionData.BorcKontrolu = "BorçYok";
+                        sessionData.IslemAdimi = "KesilmeGunu";
+                        return (true, "BORC_YOK", sessionData);
+                    }
+                }
+                else
+                {
+                    return (false, "ABONE_BULUNAMADI", sessionData);
+                }
+            }
+
+            // 6. Adım: Kesilme günü seçimi
+            if (sessionData.IslemAdimi == "KesilmeGunu" && string.IsNullOrEmpty(sessionData.EnerjiKesmeTarihi))
+            {
+                if (int.TryParse(userMessage, out var kesilmeGunu))
+                {
+                    if (kesilmeGunu >= 1 && kesilmeGunu <= 5)
+                    {
+                        var kesilmeTarihi = DateTime.Today.AddDays(kesilmeGunu);
+                        sessionData.EnerjiKesmeTarihi = kesilmeTarihi.ToString("dd/MM/yyyy");
+                        sessionData.IslemAdimi = "IbanBilgisi";
+                        return (true, "KESILME_GUNU_KAYDEDILDI", sessionData);
+                    }
+                    else
+                    {
+                        return (false, "KESILME_GUNU_ARALIK_HATASI", sessionData);
+                    }
+                }
+                else
+                {
+                    return (false, "KESILME_GUNU_FORMAT_HATASI", sessionData);
+                }
+            }
+
+            // 7. Adım: IBAN bilgisi
+            if (sessionData.IslemAdimi == "IbanBilgisi" && string.IsNullOrEmpty(sessionData.IbanNumarasi))
+            {
+                if (userMessage.StartsWith("TR") && userMessage.Length == 26)
+                {
+                    sessionData.IbanNumarasi = userMessage;
+                    sessionData.IslemAdimi = "Tamamlandi";
+                    return (true, "IBAN_KAYDEDILDI", sessionData);
+                }
+                else
+                {
+                    return (false, "IBAN_FORMAT_HATASI", sessionData);
+                }
+            }
+
             return (true, "ABONELIK_IPTALI_TAMAMLANDI", sessionData);
         }
 
@@ -249,8 +480,28 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 context += $"- Arıza Açıklaması: {sessionData.ArizaAciklamasi}\n";
             if (!string.IsNullOrEmpty(sessionData.ItirazSebebi))
                 context += $"- İtiraz Sebebi: {sessionData.ItirazSebebi}\n";
-            if (!string.IsNullOrEmpty(sessionData.IptalSebebi))
-                context += $"- İptal Sebebi: {sessionData.IptalSebebi}\n";
+            
+            // Abonelik iptali için yeni alanlar
+            if (!string.IsNullOrEmpty(sessionData.AboneSahibiMi))
+                context += $"- Abone Sahibi Mi: {sessionData.AboneSahibiMi}\n";
+            if (!string.IsNullOrEmpty(sessionData.SozlesmeHesapNo))
+                context += $"- Sözleşme Hesap No: {sessionData.SozlesmeHesapNo}\n";
+            if (!string.IsNullOrEmpty(sessionData.BabaAdi))
+                context += $"- Baba Adı: {sessionData.BabaAdi}\n";
+            if (!string.IsNullOrEmpty(sessionData.DogumTarihi))
+                context += $"- Doğum Tarihi: {sessionData.DogumTarihi}\n";
+            if (!string.IsNullOrEmpty(sessionData.BorcKontrolu))
+                context += $"- Borç Kontrolü: {sessionData.BorcKontrolu}\n";
+            if (!string.IsNullOrEmpty(sessionData.EnerjiKesmeTarihi))
+                context += $"- Enerji Kesme Tarihi: {sessionData.EnerjiKesmeTarihi}\n";
+            if (!string.IsNullOrEmpty(sessionData.IbanNumarasi))
+                context += $"- IBAN: {sessionData.IbanNumarasi}\n";
+            if (!string.IsNullOrEmpty(sessionData.IslemAdimi))
+                context += $"- İşlem Adımı: {sessionData.IslemAdimi}\n";
+            if (!string.IsNullOrEmpty(sessionData.VefatDurumu))
+                context += $"- Vefat Durumu: {sessionData.VefatDurumu}\n";
+            if (!string.IsNullOrEmpty(sessionData.TuzelAbonelik))
+                context += $"- Tüzel Abonelik: {sessionData.TuzelAbonelik}\n";
             
             context += $"\nDOĞRULAMA SONUCU: {(isValid ? "BAŞARILI" : "HATALI")}\n";
             
@@ -274,13 +525,10 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 "AD_SOYAD_BULUNAMADI" => "Ad soyad bulunamadı, tekrar iste",
                 "TC_KIMLIK_DOGRULANDI" => "T.C. Kimlik doğrulandı, Abone No isteniyor",
                 "TC_KIMLIK_YANLIS" => "T.C. Kimlik yanlış, tekrar iste",
-                "TC_KIMLIK_FORMAT_HATASI" => "T.C. Kimlik format hatası, 11 haneli olmalı",
                 "ABONE_DOGRULANDI" => "Abone doğrulandı, senaryo özel adıma geç",
                 "ABONE_NO_YANLIS" => "Abone No yanlış, tekrar iste",
-                "ABONE_NO_FORMAT_HATASI" => "Abone No format hatası, en az 6 haneli olmalı",
                 "FATURA_ID_KAYDEDILDI" => "Fatura ID kaydedildi, işlem tamamlandı",
                 "FATURA_ID_FORMAT_HATASI" => "Fatura ID format hatası, 5 haneli olmalı",
-                "IPTAL_SEBEBI_KAYDEDILDI" => "İptal sebebi kaydedildi, işlem tamamlandı",
                 "ITIRAZ_FATURA_ID_KAYDEDILDI" => "İtiraz Fatura ID kaydedildi, itiraz sebebi isteniyor",
                 "ITIRAZ_SEBEBI_KAYDEDILDI" => "İtiraz sebebi kaydedildi, işlem tamamlandı",
                 "ADRES_KAYDEDILDI" => "Adres kaydedildi, arıza açıklaması isteniyor",
@@ -290,6 +538,31 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 "FATURA_ITIRAZI_TAMAMLANDI" => "Fatura itirazı tamamlandı",
                 "ELEKTRIK_ARIZASI_TAMAMLANDI" => "Elektrik arızası tamamlandı",
                 "SERBEST_KONUSMA" => "Serbest konuşma modu",
+                
+                // Abonelik iptali yeni mesajları
+                "ABONE_SAHIBI_EVET" => "Abone sahibi evet dedi, abone numarası isteniyor",
+                "ABONE_SAHIBI_HAYIR" => "Abone sahibi hayır dedi, KVKK gereği işlem yapılamaz",
+                "ABONE_SAHIBI_VEFAT" => "Abone sahibi vefat etti, canlı desteğe aktarım gerekli",
+                "ABONE_SAHIBI_SIRKET" => "Tüzel abonelik, canlı desteğe aktarım gerekli",
+                "ABONE_SAHIBI_BELIRSIZ" => "Abone sahibi sorusu belirsiz, tekrar sor",
+                "ABONE_NO_DOGRULANDI" => "Abone numarası doğrulandı, isim soyisim isteniyor",
+                "ABONE_NO_FORMAT_HATASI" => "Abone numarası format hatası, 10 haneli olmalı",
+                "ISIM_SOYISIM_KAYDEDILDI" => "İsim soyisim kaydedildi, T.C. kimlik no isteniyor",
+                "TC_KIMLIK_KAYDEDILDI" => "T.C. kimlik no kaydedildi, doğum tarihi isteniyor",
+                "TC_KIMLIK_FORMAT_HATASI" => "T.C. kimlik no format hatası, 11 haneli olmalı",
+                "DOGUM_TARIHI_KAYDEDILDI" => "Doğum tarihi kaydedildi, borç kontrolü yapılıyor",
+                "DOGUM_TARIHI_FORMAT_HATASI" => "Doğum tarihi format hatası, GG/AA/YYYY formatında olmalı",
+                "BILGILER_ESLESMIYOR" => "Girdiğiniz bilgiler sistemdeki kayıtlarla eşleşmiyor, lütfen kontrol edin",
+
+                "BORC_VAR" => "Borç tespit edildi, borç tutarı bildiriliyor",
+                "BORC_YOK" => "Borç yok, kesilme günü seçimi isteniyor",
+                "ABONE_BULUNAMADI" => "Abone bulunamadı, abone numarasını kontrol et",
+                "KESILME_GUNU_KAYDEDILDI" => "Kesilme günü kaydedildi, IBAN bilgisi isteniyor",
+                "KESILME_GUNU_ARALIK_HATASI" => "Kesilme günü 1-5 arasında olmalı",
+                "KESILME_GUNU_FORMAT_HATASI" => "Kesilme günü sayı formatında olmalı",
+                "IBAN_KAYDEDILDI" => "IBAN kaydedildi, işlem tamamlanıyor",
+                "IBAN_FORMAT_HATASI" => "IBAN format hatası, TR ile başlayan 26 haneli olmalı",
+                
                 _ => validationMessage
             };
         }
@@ -348,27 +621,83 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
 
         private string GetAbonelikIptaliInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
-            if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan ad soyadını iste. Nazik ve profesyonel ol.";
-            
-            if (string.IsNullOrEmpty(sessionData.TcKimlikNo))
-                return "Kullanıcıdan T.C. Kimlik numarasını iste (11 haneli).";
-            
-            if (string.IsNullOrEmpty(sessionData.AboneNo))
-                return "Kullanıcıdan abone numarasını iste (6 haneli).";
-            
-            // Abone doğrulandıktan sonra iptal sebebini iste
-            if (!string.IsNullOrEmpty(sessionData.AboneNo) && string.IsNullOrEmpty(sessionData.IptalSebebi))
+            // 1. Adım: Abone sahibi mi sorusu
+            if (string.IsNullOrEmpty(sessionData.AboneSahibiMi))
+            {
+                return "Merhaba! Ben Dijital Asistanınız! Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?";
+            }
+
+            // 2. Adım: Abone sahibi hayır dedi
+            if (sessionData.AboneSahibiMi == "Hayır")
+            {
+                return "Anlayışınız için teşekkür ederim. Bu işlem kişisel bilgilere ve abonelik haklarına yönelik olduğu için, sadece abonelik sahibi ya da sistemimizde kayıtlı yetkili kişi ile devam edebiliyoruz. Bu nedenle şu an için işlemi başlatamıyorum. En kısa sürede abone sahibiyle iletişime geçilmesini rica ederim. Başka bir konuda size yardımcı olabilirsem memnuniyetle buradayım.";
+            }
+
+            // 3. Adım: Vefat durumu
+            if (sessionData.AboneSahibiMi == "Vefat")
+            {
+                return "Başınız sağ olsun. Böyle bir durumda işlemleri hassasiyetle ele alıyoruz. Bu işlem, özel bir prosedür gerektiriyor. Şu aşamada sizi canlı destek ekibimize aktarıyorum. Onlar, durumunuzu detaylıca dinleyip uygun yönlendirmeyi sağlayacaktır. Lütfen hatta kalın, birazdan bağlanacaksınız.";
+            }
+
+            // 4. Adım: Tüzel abonelik
+            if (sessionData.AboneSahibiMi == "Şirket")
+            {
+                return "Bu abonelik, tüzel kişi (şirket) adına kayıtlı görünüyor. Tüzel abonelik işlemlerinde, yalnızca yetkili kişilerle ve özel doğrulama adımlarıyla işlem yapılabilmektedir. Bu işlem dijital asistan aracılığıyla gerçekleştirilememektedir. Sizi hemen canlı destek ekibimize aktarıyorum. Lütfen hatta kalın, bağlantınız sağlanıyor...";
+            }
+
+            // 5. Adım: Abone numarası
+            if (sessionData.AboneSahibiMi == "Evet" && sessionData.IslemAdimi == "AboneNo" && string.IsNullOrEmpty(sessionData.AboneNo))
+            {
+                return "Teşekkür ederim. Devam edebilmem için lütfen 10 haneli abone numaranızı paylaşır mısınız?";
+            }
+
+            // 2. Adım: İsim Soyisim
+            if (sessionData.IslemAdimi == "IsimSoyisim")
+            {
+                return "Teşekkür ederim. Şimdi ad soyadınızı öğrenebilir miyim?";
+            }
+
+            // 3. Adım: T.C. Kimlik No
+            if (sessionData.IslemAdimi == "TcKimlikNo")
+            {
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
+            }
+
+            // 4. Adım: Doğum Tarihi
+            if (sessionData.IslemAdimi == "DogumTarihi")
+            {
+                return "Doğum tarihinizi GG/AA/YYYY formatında öğrenebilir miyim?";
+            }
+
+            // 5. Adım: Borç kontrolü sonrası
+            if (sessionData.BorcKontrolu == "BorçVar")
+            {
+                var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
+                var borcTutari = abone?.GuncelBorc.ToString("N2") ?? "0.00";
+                return $"Bu abonelikle ilişkili ödenmemiş bir borç mevcut. Güncel borç tutarınız: {borcTutari} TL. Borcunuz ödendikten sonra abonelik sonlandırma işlemini tekrar başlatabiliriz. Ödemenizi mobil bankacılıktan, yüz-yüze ödeme kanalları ve N-Kolay Ödeme Merkezlerinden kolayca yapabilirsiniz. Şu anda işlemi devam ettiremiyorum. Ancak dilerseniz işlemi daha sonra kaldığınız yerden tekrar başlatabilirim. Yardımcı olabileceğim başka bir konu var mı?";
+            }
+
+            // 6. Adım: Kesilme günü seçimi
+            if (sessionData.IslemAdimi == "KesilmeGunu")
+            {
+                return "Teşekkür ederim. Bilgileriniz başarıyla doğrulandı. Şimdi aboneliğinizin kaç gün içinde kesilmesini istiyorsunuz? (1-5 gün arası bir sayı giriniz)";
+            }
+
+            // 7. Adım: IBAN bilgisi
+            if (sessionData.IslemAdimi == "IbanBilgisi")
+            {
+                return "Son olarak, güvence bedelinin iadesi için IBAN bilginizi alabilir miyim? (Lütfen başında TR olacak şekilde giriniz.)";
+            }
+
+            // 8. Adım: İşlem tamamlandı
+            if (sessionData.IslemAdimi == "Tamamlandi")
             {
                 var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
                 var aboneName = abone?.IsimSoyisim ?? "Sayın Müşterimiz";
-                return $"Hoş geldiniz {aboneName}! Abonelik iptali işleminiz için iptal sebebinizi öğrenebilir miyim? Size alternatif çözümler de sunabilirim.";
+                return $"IBAN bilginiz başarıyla kaydedildi. {sessionData.EnerjiKesmeTarihi} tarihinde aboneliğiniz kesilecek. Ardından son tüketim faturanızı oluşturacağız ve güvence bedelinizden düşerek sözleşmenizi resmi olarak sonlandıracağız. Kalan güvence bedeli tutarınız aboneliğiniz kesildikten sonra 5 iş günü içerisinde iletmiş olduğunuz IBAN numarasına yatırılacaktır. İşleminiz başarıyla başlatıldı. Sonlandırma işleminiz gerçekleştiğinde size SMS ile bilgilendirme sağlanacaktır. Başka bir konuda yardımcı olabilir miyim?";
             }
-            
-            if (string.IsNullOrEmpty(sessionData.IptalSebebi))
-                return "Kullanıcıdan iptal sebebini öğren. Anlayışlı ol ve alternatif çözümler önerebilirsin.";
-            
-            return "Abonelik iptali işlemi tamamlandı. İptal sebebini anladığını belirt ve başka bir konuda yardım edebileceğini söyle.";
+
+            return "Abonelik iptali işlemi devam ediyor. Size nasıl yardımcı olabilirim?";
         }
 
         private string GetFaturaItiraziInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
@@ -477,7 +806,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             string welcome = scenario switch
             {
                 "FaturaOdemesi" => "Merhaba! Fatura ödemesi işlemleriniz için size yardımcı olacağım. Öncelikle ad soyadınızı öğrenebilir miyim?",
-                "AbonelikIptali" => "Merhaba! Abonelik iptali işlemleriniz için size yardımcı olacağım. Öncelikle ad soyadınızı öğrenebilir miyim?",
+                "AbonelikIptali" => "Merhaba! Ben Dijital Asistanınız! Size abonelik sonlandırma işleminizde yardımcı olacağım. İşleme başlamadan önce, bazı bilgileri teyit etmem gerekiyor. Öncelikle, aboneliğin sahibi siz misiniz?",
                 "FaturaItirazi" => "Merhaba! Fatura itirazı işlemleriniz için size yardımcı olacağım. Öncelikle ad soyadınızı öğrenebilir miyim?",
                 "ElektrikArizasi" => "Merhaba! Elektrik arızası bildirimi için size yardımcı olacağım. Öncelikle ad soyadınızı öğrenebilir miyim?",
                 "Diger" => "Merhaba! Size nasıl yardımcı olabilirim? Öncelikle ad soyadınızı öğrenebilir miyim?",
