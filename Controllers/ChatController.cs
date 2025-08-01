@@ -83,6 +83,58 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 AktifAbonelik = true,
                 AbonelikTipi = "Konut",
                 OzelDurumNotu = "Vefat eden kişi aboneliği"
+            },
+            
+            // 4. Kullanıcı: Şirketsel abonelik (tüzel kişi)
+            new Abone 
+            { 
+                IsimSoyisim = "Altan Teknoloji A.Ş.", 
+                TcKimlikNo = 12345678999,
+                AboneNo = 1000000004, 
+                Telefon = 5554445566, 
+                FaturaId = 44444, 
+                Adres = "İstanbul, Levent Mahallesi, Büyükdere Caddesi No:123",
+                BabaAdi = "",
+                DogumTarihi = new DateTime(2000, 1, 1),
+                SozlesmeHesapNo = "1064567890",
+                IbanNumarasi = "TR120006200000000456789012",
+                GuvenceBedeli = 1500.00m,
+                GuncelBorc = 0.00m,
+                AbonelikDurumu = "Normal",
+                TuzelAbonelik = true,
+                TuzelKurumAdi = "Altan Teknoloji A.Ş.",
+                YetkiliKisiAdi = "Altan Yönetici",
+                VefatDurumu = false,
+                SayacSeriNo = "S456789012",
+                AbonelikBaslangicTarihi = new DateTime(2021, 5, 10),
+                AktifAbonelik = true,
+                AbonelikTipi = "Ticari",
+                OzelDurumNotu = "Tüzel kişi aboneliği"
+            },
+            
+            // 5. Kullanıcı: Sistemsel hata durumu aboneliği
+            new Abone 
+            { 
+                IsimSoyisim = "Atakan Kağan",
+                TcKimlikNo = 12345678900,
+                AboneNo = 1000000005,
+                Telefon = 5555555566,
+                FaturaId = 55555,
+                Adres = "Ankara, Çankaya Mahallesi, No:321",
+                BabaAdi = "Ahmet",
+                DogumTarihi = new DateTime(1990, 12, 6),
+                SozlesmeHesapNo = "1065555555",
+                IbanNumarasi = "TR120006200000000555555555",
+                GuvenceBedeli = 400.00m,
+                GuncelBorc = 0.00m,
+                AbonelikDurumu = "Normal",
+                TuzelAbonelik = false,
+                VefatDurumu = false,
+                SayacSeriNo = "S555555555",
+                AbonelikBaslangicTarihi = new DateTime(2022, 8, 15),
+                AktifAbonelik = true,
+                AbonelikTipi = "Konut",
+                OzelDurumNotu = "Sistemsel hata durumu aboneliği"
             }
         };
 
@@ -107,11 +159,74 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             sessionData = updatedSessionData;
             HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(sessionData));
 
-            // AI'dan doğal konuşma yanıtı al
+            // Tüzel abonelik tespit edildiğinde otomatik canlı destek yönlendirmesi
+            if (validationMessage == "TUZEL_ABONELIK_TESPIT_EDILDI")
+            {
+                // Önce tüzel abonelik mesajını ver
+                string tuzelAbonelikMesaji = "Bu abonelik, tüzel kişi (şirket) adına kayıtlı görünüyor. Tüzel abonelik işlemlerinde, yalnızca yetkili kişilerle ve özel doğrulama adımlarıyla işlem yapılabilmektedir. Bu işlem dijital asistan aracılığıyla gerçekleştirilememektedir. Sizi hemen canlı destek ekibimize aktarıyorum. Lütfen hatta kalın, bağlantınız sağlanıyor...";
+                
+                // Tüzel abonelik durumunu session'a kaydet
+                sessionData.TuzelAbonelik = "Evet";
+                HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(sessionData));
+                
+                // History'yi güncelle
+                history += $"Siz: {input.Message}\nAsistan: {tuzelAbonelikMesaji}\n";
+                HttpContext.Session.SetString("ChatHistory", history);
+                
+                // Konuşma geçmişini kaydet
+                SaveChatHistory(history);
+                
+                // 3 saniye sonra canlı destek senaryosuna geç
+                return Json(new { reply = tuzelAbonelikMesaji, history, redirectToCanliDestek = true, delay = 3000 });
+            }
+
+            // Vefat durumu tespit edildiğinde otomatik canlı destek yönlendirmesi
+            if (validationMessage == "VEFAT_DURUMU_TESPIT_EDILDI")
+            {
+                // Önce vefat durumu mesajını ver
+                string vefatMesaji = "Başınız sağ olsun. Böyle bir durumda işlemleri hassasiyetle ele alıyoruz. Bu işlem, özel bir prosedür gerektiriyor. Şu aşamada sizi canlı destek ekibimize aktarıyorum. Onlar, durumunuzu detaylıca dinleyip uygun yönlendirmeyi sağlayacaktır. Lütfen hatta kalın, birazdan bağlanacaksınız.";
+                
+                // Vefat durumunu session'a kaydet
+                sessionData.VefatDurumu = "Evet";
+                HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(sessionData));
+                
+                // History'yi güncelle
+                history += $"Siz: {input.Message}\nAsistan: {vefatMesaji}\n";
+                HttpContext.Session.SetString("ChatHistory", history);
+                
+                // Konuşma geçmişini kaydet
+                SaveChatHistory(history);
+                
+                // 3 saniye sonra canlı destek senaryosuna geç
+                return Json(new { reply = vefatMesaji, history, redirectToCanliDestek = true, delay = 3000 });
+            }
+
+            // Sistemsel hata durumu tespit edildiğinde otomatik canlı destek yönlendirmesi
+            if (validationMessage == "SISTEMSEL_HATA_TESPIT_EDILDI")
+            {
+                // Önce sistemsel hata mesajını ver
+                string sistemselHataMesaji = "Şu anda sistemimizde teknik bir aksaklık oluştu. Ne yazık ki işlemi tamamlayamıyorum. Sizi daha fazla bekletmeden canlı destek ekibimize aktarıyorum. Oradaki arkadaşlarımız işleminizi hemen inceleyip yardımcı olacaklardır. Lütfen hatta kalın, birazdan bağlanacaksınız.";
+                
+                // Sistemsel hata durumunu session'a kaydet
+                sessionData.SistemselHata = "Evet";
+                HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(sessionData));
+                
+                // History'yi güncelle
+                history += $"Siz: {input.Message}\nAsistan: {sistemselHataMesaji}\n";
+                HttpContext.Session.SetString("ChatHistory", history);
+                
+                // Konuşma geçmişini kaydet
+                SaveChatHistory(history);
+                
+                // 3 saniye sonra canlı destek senaryosuna geç
+                return Json(new { reply = sistemselHataMesaji, history, redirectToCanliDestek = true, delay = 3000 });
+            }
+
+            // AI'dan doğal konuşma yanıtı al (vefat durumu hariç)
             string aiReply = await GetAIResponse(scenario, sessionData, input.Message, history, isValid, validationMessage);
             
             // History'yi güncelle
-            history += $"User: {input.Message}\nBot: {aiReply}\n";
+            history += $"Siz: {input.Message}\nAsistan: {aiReply}\n";
             HttpContext.Session.SetString("ChatHistory", history);
 
             // Konuşma geçmişini kaydet
@@ -131,6 +246,32 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                     return (true, "SERBEST_SOHBET_BASLADI", sessionData);
                 }
                 return (true, "SERBEST_SOHBET_DEVAM", sessionData);
+            }
+
+            // Canlı Destek için özel işlem
+            if (scenario == "CanliDestek")
+            {
+                if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
+                {
+                    var isimSoyisim = userMessage.Trim();
+                    
+                    // Basit ad soyad kontrolü (en az 2 kelime olmalı)
+                    var kelimeler = isimSoyisim.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                    if (kelimeler.Length < 2)
+                    {
+                        return (false, "CANLI_DESTEK_ISIM_FORMAT_HATASI", sessionData);
+                    }
+                    
+                    // İsim soyisimde sadece harf ve boşluk olmalı
+                    if (!isimSoyisim.All(c => char.IsLetter(c) || char.IsWhiteSpace(c)))
+                    {
+                        return (false, "CANLI_DESTEK_ISIM_KARAKTER_HATASI", sessionData);
+                    }
+                    
+                    sessionData.IsimSoyisim = isimSoyisim;
+                    return (true, "CANLI_DESTEK_BASLADI", sessionData);
+                }
+                return (true, "CANLI_DESTEK_DEVAM", sessionData);
             }
 
             // Abonelik İptali için özel akış
@@ -198,6 +339,14 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                         return (false, "ABONE_NO_YANLIS", sessionData);
                     }
                     
+                    // Tüzel abonelik kontrolü
+                    if (abone.TuzelAbonelik)
+                    {
+                        sessionData.AboneNo = aboneNo.ToString();
+                        sessionData.TuzelAbonelik = "Evet";
+                        return (true, "TUZEL_ABONELIK_TESPIT_EDILDI", sessionData);
+                    }
+                    
                     sessionData.AboneNo = aboneNo.ToString();
                     return (true, "ABONE_DOGRULANDI", sessionData);
                 }
@@ -219,6 +368,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 "AbonelikIptali" => ValidateAbonelikIptali(sessionData, userMessage),
                 "FaturaItirazi" => ValidateFaturaItirazi(sessionData, userMessage),
                 "ElektrikArizasi" => ValidateElektrikArizasi(sessionData, userMessage),
+                "CanliDestek" => (true, "CANLI_DESTEK_DEVAM", sessionData),
                 "Diger" => (true, "SERBEST_KONUSMA", sessionData),
                 _ => (true, "SERBEST_KONUSMA", sessionData)
             };
@@ -264,7 +414,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 {
                     sessionData.AboneSahibiMi = "Vefat";
                     sessionData.VefatDurumu = "Evet";
-                    return (true, "ABONE_SAHIBI_VEFAT", sessionData);
+                    return (true, "VEFAT_DURUMU_TESPIT_EDILDI", sessionData);
                 }
                 else if (response.Contains("şirket") || response.Contains("firma") || response.Contains("tüzel"))
                 {
@@ -283,6 +433,22 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             {
                 if (userMessage.Length == 10 && long.TryParse(userMessage, out var aboneNo))
                 {
+                    // Abone numarasına göre abone bilgilerini kontrol et
+                    var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo == aboneNo);
+                    
+                    if (abone == null)
+                    {
+                        return (false, "ABONE_NO_BULUNAMADI", sessionData);
+                    }
+                    
+                    // Tüzel abonelik kontrolü
+                    if (abone.TuzelAbonelik)
+                    {
+                        sessionData.AboneNo = aboneNo.ToString();
+                        sessionData.TuzelAbonelik = "Evet";
+                        return (true, "TUZEL_ABONELIK_TESPIT_EDILDI", sessionData);
+                    }
+                    
                     sessionData.AboneNo = aboneNo.ToString();
                     sessionData.IslemAdimi = "IsimSoyisim";
                     return (true, "ABONE_NO_DOGRULANDI", sessionData);
@@ -296,7 +462,19 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             // 2. Adım: İsim Soyisim
             if (sessionData.IslemAdimi == "IsimSoyisim" && string.IsNullOrEmpty(sessionData.IsimSoyisim))
             {
-                sessionData.IsimSoyisim = userMessage.Trim();
+                var isimSoyisim = userMessage.Trim();
+                
+                // Abone numarası ile isim tutarlılığını kontrol et
+                var abone = OrnekAboneler.FirstOrDefault(a => 
+                    a.AboneNo.ToString() == sessionData.AboneNo &&
+                    a.IsimSoyisim.Equals(isimSoyisim, StringComparison.OrdinalIgnoreCase));
+                
+                if (abone == null)
+                {
+                    return (false, "ABONE_NO_ISIM_ESLESMIYOR", sessionData);
+                }
+                
+                sessionData.IsimSoyisim = isimSoyisim;
                 sessionData.IslemAdimi = "TcKimlikNo";
                 return (true, "ISIM_SOYISIM_KAYDEDILDI", sessionData);
             }
@@ -306,6 +484,17 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             {
                 if (userMessage.Length == 11 && long.TryParse(userMessage, out var tcKimlik))
                 {
+                    // Abone numarası, isim ve T.C. kimlik tutarlılığını kontrol et
+                    var abone = OrnekAboneler.FirstOrDefault(a => 
+                        a.AboneNo.ToString() == sessionData.AboneNo &&
+                        a.IsimSoyisim.Equals(sessionData.IsimSoyisim, StringComparison.OrdinalIgnoreCase) &&
+                        a.TcKimlikNo == tcKimlik);
+                    
+                    if (abone == null)
+                    {
+                        return (false, "ABONE_NO_ISIM_TC_ESLESMIYOR", sessionData);
+                    }
+                    
                     sessionData.TcKimlikNo = tcKimlik.ToString();
                     sessionData.IslemAdimi = "DogumTarihi";
                     return (true, "TC_KIMLIK_KAYDEDILDI", sessionData);
@@ -350,6 +539,13 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
                 if (abone != null)
                 {
+                    // Sistemsel hata durumu kontrolü (Tuba Hatipoğlu aboneliği)
+                    if (abone.AboneNo == 1000000005)
+                    {
+                        sessionData.BorcKontrolu = "SistemselHata";
+                        return (true, "SISTEMSEL_HATA_TESPIT_EDILDI", sessionData);
+                    }
+                    
                     if (abone.GuncelBorc > 0)
                     {
                         sessionData.BorcKontrolu = "BorçVar";
@@ -502,6 +698,8 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 context += $"- Vefat Durumu: {sessionData.VefatDurumu}\n";
             if (!string.IsNullOrEmpty(sessionData.TuzelAbonelik))
                 context += $"- Tüzel Abonelik: {sessionData.TuzelAbonelik}\n";
+            if (!string.IsNullOrEmpty(sessionData.SistemselHata))
+                context += $"- Sistemsel Hata: {sessionData.SistemselHata}\n";
             
             context += $"\nDOĞRULAMA SONUCU: {(isValid ? "BAŞARILI" : "HATALI")}\n";
             
@@ -521,6 +719,10 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             {
                 "SERBEST_SOHBET_BASLADI" => "Kullanıcı adını verdi, serbest sohbet başlat",
                 "SERBEST_SOHBET_DEVAM" => "Serbest sohbet devam ediyor",
+                "CANLI_DESTEK_BASLADI" => "Kullanıcı adını verdi, canlı destek başlat",
+                "CANLI_DESTEK_DEVAM" => "Canlı destek devam ediyor",
+                "CANLI_DESTEK_ISIM_FORMAT_HATASI" => "Ad soyad en az 2 kelime olmalı",
+                "CANLI_DESTEK_ISIM_KARAKTER_HATASI" => "Ad soyad sadece harf içermeli",
                 "AD_SOYAD_DOGRULANDI" => "Ad soyad doğrulandı, T.C. Kimlik isteniyor",
                 "AD_SOYAD_BULUNAMADI" => "Ad soyad bulunamadı, tekrar iste",
                 "TC_KIMLIK_DOGRULANDI" => "T.C. Kimlik doğrulandı, Abone No isteniyor",
@@ -543,16 +745,22 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 "ABONE_SAHIBI_EVET" => "Abone sahibi evet dedi, abone numarası isteniyor",
                 "ABONE_SAHIBI_HAYIR" => "Abone sahibi hayır dedi, KVKK gereği işlem yapılamaz",
                 "ABONE_SAHIBI_VEFAT" => "Abone sahibi vefat etti, canlı desteğe aktarım gerekli",
+                "VEFAT_DURUMU_TESPIT_EDILDI" => "Vefat durumu tespit edildi, canlı desteğe aktarım",
                 "ABONE_SAHIBI_SIRKET" => "Tüzel abonelik, canlı desteğe aktarım gerekli",
                 "ABONE_SAHIBI_BELIRSIZ" => "Abone sahibi sorusu belirsiz, tekrar sor",
                 "ABONE_NO_DOGRULANDI" => "Abone numarası doğrulandı, isim soyisim isteniyor",
                 "ABONE_NO_FORMAT_HATASI" => "Abone numarası format hatası, 10 haneli olmalı",
+                "ABONE_NO_BULUNAMADI" => "Abone numarası bulunamadı, lütfen kontrol edin",
+                "TUZEL_ABONELIK_TESPIT_EDILDI" => "Tüzel abonelik tespit edildi, canlı desteğe aktarım",
+                "SISTEMSEL_HATA_TESPIT_EDILDI" => "Sistemsel hata tespit edildi, canlı desteğe aktarım",
                 "ISIM_SOYISIM_KAYDEDILDI" => "İsim soyisim kaydedildi, T.C. kimlik no isteniyor",
                 "TC_KIMLIK_KAYDEDILDI" => "T.C. kimlik no kaydedildi, doğum tarihi isteniyor",
                 "TC_KIMLIK_FORMAT_HATASI" => "T.C. kimlik no format hatası, 11 haneli olmalı",
                 "DOGUM_TARIHI_KAYDEDILDI" => "Doğum tarihi kaydedildi, borç kontrolü yapılıyor",
                 "DOGUM_TARIHI_FORMAT_HATASI" => "Doğum tarihi format hatası, GG/AA/YYYY formatında olmalı",
                 "BILGILER_ESLESMIYOR" => "Girdiğiniz bilgiler sistemdeki kayıtlarla eşleşmiyor, lütfen kontrol edin",
+                "ABONE_NO_ISIM_ESLESMIYOR" => "Abone numarası ile girdiğiniz isim soyisim eşleşmiyor, lütfen kontrol edin",
+                "ABONE_NO_ISIM_TC_ESLESMIYOR" => "Abone numarası, isim soyisim ve T.C. kimlik numarası eşleşmiyor, lütfen kontrol edin",
 
                 "BORC_VAR" => "Borç tespit edildi, borç tutarı bildiriliyor",
                 "BORC_YOK" => "Borç yok, kesilme günü seçimi isteniyor",
@@ -589,6 +797,9 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 case "SerbestSohbet":
                     return GetSerbestSohbetInstructions(sessionData, isValid, validationMessage);
                 
+                case "CanliDestek":
+                    return GetCanliDestekInstructions(sessionData, isValid, validationMessage);
+                
                 default:
                     return "Genel konuşma yapabilirsin.";
             }
@@ -597,30 +808,36 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
         private string GetFaturaOdemesiInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
             if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan ad soyadını iste. Nazik ve profesyonel ol.";
+                return "Ad soyadınızı öğrenebilir miyim?";
             
             if (string.IsNullOrEmpty(sessionData.TcKimlikNo))
-                return "Kullanıcıdan T.C. Kimlik numarasını iste (11 haneli).";
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
             
             if (string.IsNullOrEmpty(sessionData.AboneNo))
-                return "Kullanıcıdan abone numarasını iste (6 haneli).";
+                return "Abone numaranızı öğrenebilir miyim? (6 haneli)";
             
             // Abone doğrulandıktan sonra fatura ID iste
             if (!string.IsNullOrEmpty(sessionData.AboneNo) && string.IsNullOrEmpty(sessionData.FaturaId))
             {
                 var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
                 var aboneName = abone?.IsimSoyisim ?? "Sayın Müşterimiz";
-                return $"Hoş geldiniz {aboneName}! Fatura ödemesi işleminiz için ödemek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
+                return $"Hoş geldiniz {aboneName}! Ödemek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
             }
             
             if (string.IsNullOrEmpty(sessionData.FaturaId))
-                return "Kullanıcıdan ödemek istediği faturanın ID'sini iste (5 haneli).";
+                return "Ödemek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
             
-            return "Fatura ödemesi işlemi tamamlandı. Teşekkür et ve başka bir konuda yardım edebileceğini belirt.";
+            return "Fatura ödemesi işlemi tamamlandı. Teşekkür ederim. Başka bir konuda yardımcı olabilirim.";
         }
 
         private string GetAbonelikIptaliInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
+            // Vefat durumu kontrolü - özel mesaj döndür
+            if (sessionData.AboneSahibiMi == "Vefat" || sessionData.VefatDurumu == "Evet")
+            {
+                return "Başınız sağ olsun. Böyle bir durumda işlemleri hassasiyetle ele alıyoruz. Bu işlem, özel bir prosedür gerektiriyor. Şu aşamada sizi canlı destek ekibimize aktarıyorum. Onlar, durumunuzu detaylıca dinleyip uygun yönlendirmeyi sağlayacaktır. Lütfen hatta kalın, birazdan bağlanacaksınız.";
+            }
+
             // 1. Adım: Abone sahibi mi sorusu
             if (string.IsNullOrEmpty(sessionData.AboneSahibiMi))
             {
@@ -633,16 +850,19 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 return "Anlayışınız için teşekkür ederim. Bu işlem kişisel bilgilere ve abonelik haklarına yönelik olduğu için, sadece abonelik sahibi ya da sistemimizde kayıtlı yetkili kişi ile devam edebiliyoruz. Bu nedenle şu an için işlemi başlatamıyorum. En kısa sürede abone sahibiyle iletişime geçilmesini rica ederim. Başka bir konuda size yardımcı olabilirsem memnuniyetle buradayım.";
             }
 
-            // 3. Adım: Vefat durumu
-            if (sessionData.AboneSahibiMi == "Vefat")
-            {
-                return "Başınız sağ olsun. Böyle bir durumda işlemleri hassasiyetle ele alıyoruz. Bu işlem, özel bir prosedür gerektiriyor. Şu aşamada sizi canlı destek ekibimize aktarıyorum. Onlar, durumunuzu detaylıca dinleyip uygun yönlendirmeyi sağlayacaktır. Lütfen hatta kalın, birazdan bağlanacaksınız.";
-            }
+            // 3. Adım: Vefat durumu (artık yukarıda kontrol ediliyor)
+            // Bu kontrol kaldırıldı çünkü yukarıda özel kontrol eklendi
 
             // 4. Adım: Tüzel abonelik
             if (sessionData.AboneSahibiMi == "Şirket")
             {
                 return "Bu abonelik, tüzel kişi (şirket) adına kayıtlı görünüyor. Tüzel abonelik işlemlerinde, yalnızca yetkili kişilerle ve özel doğrulama adımlarıyla işlem yapılabilmektedir. Bu işlem dijital asistan aracılığıyla gerçekleştirilememektedir. Sizi hemen canlı destek ekibimize aktarıyorum. Lütfen hatta kalın, bağlantınız sağlanıyor...";
+            }
+
+            // 5. Adım: Abone numarasından tüzel abonelik tespiti
+            if (sessionData.TuzelAbonelik == "Evet")
+            {
+                return "Bu abonelik, tüzel kişi (şirket) adına kayıtlı görünüyor. Tüzel abonelikler yalnızca yetkili kişilerle ve özel doğrulama adımlarıyla işlem yapılabilmektedir. Bu işlem dijital asistan aracılığıyla gerçekleştirilememektedir. Sizi hemen canlı destek ekibimize aktarıyorum. Lütfen hatta kalın, bağlantınız sağlanıyor...";
             }
 
             // 5. Adım: Abone numarası
@@ -654,13 +874,13 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             // 2. Adım: İsim Soyisim
             if (sessionData.IslemAdimi == "IsimSoyisim")
             {
-                return "Teşekkür ederim. Şimdi ad soyadınızı öğrenebilir miyim?";
+                return "Teşekkür ederim. Şimdi ad soyadınızı öğrenebilir miyim? (Abone numaranızla eşleşen isim soyisim olmalıdır)";
             }
 
             // 3. Adım: T.C. Kimlik No
             if (sessionData.IslemAdimi == "TcKimlikNo")
             {
-                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli, abone numaranız ve isim soyisiminizle eşleşen)";
             }
 
             // 4. Adım: Doğum Tarihi
@@ -703,79 +923,111 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
         private string GetFaturaItiraziInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
             if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan ad soyadını iste. Nazik ve profesyonel ol.";
+                return "Ad soyadınızı öğrenebilir miyim?";
             
             if (string.IsNullOrEmpty(sessionData.TcKimlikNo))
-                return "Kullanıcıdan T.C. Kimlik numarasını iste (11 haneli).";
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
             
             if (string.IsNullOrEmpty(sessionData.AboneNo))
-                return "Kullanıcıdan abone numarasını iste (6 haneli).";
+                return "Abone numaranızı öğrenebilir miyim? (6 haneli)";
             
             // Abone doğrulandıktan sonra fatura ID iste
             if (!string.IsNullOrEmpty(sessionData.AboneNo) && string.IsNullOrEmpty(sessionData.FaturaId))
             {
                 var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
                 var aboneName = abone?.IsimSoyisim ?? "Sayın Müşterimiz";
-                return $"Hoş geldiniz {aboneName}! Fatura itirazı işleminiz için itiraz etmek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
+                return $"Hoş geldiniz {aboneName}! İtiraz etmek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
             }
             
             if (string.IsNullOrEmpty(sessionData.FaturaId))
-                return "Kullanıcıdan itiraz etmek istediği faturanın ID'sini iste (5 haneli).";
+                return "İtiraz etmek istediğiniz faturanın ID'sini öğrenebilir miyim? (5 haneli)";
             
             if (string.IsNullOrEmpty(sessionData.ItirazSebebi))
-                return "Kullanıcıdan itiraz sebebini öğren. Dikkatle dinle ve anlayışlı ol.";
+                return "İtiraz sebebinizi öğrenebilir miyim?";
             
-            return "Fatura itirazı işlemi tamamlandı. İtirazını aldığını belirt ve inceleme sürecini açıkla.";
+            return "İtirazınız kaydedildi. İnceleme sürecimiz başlatıldı. Teşekkür ederim.";
         }
 
         private string GetElektrikArizasiInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
             if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan ad soyadını iste. Nazik ve profesyonel ol.";
+                return "Ad soyadınızı öğrenebilir miyim?";
             
             if (string.IsNullOrEmpty(sessionData.TcKimlikNo))
-                return "Kullanıcıdan T.C. Kimlik numarasını iste (11 haneli).";
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
             
             if (string.IsNullOrEmpty(sessionData.AboneNo))
-                return "Kullanıcıdan abone numarasını iste (6 haneli).";
+                return "Abone numaranızı öğrenebilir miyim? (6 haneli)";
             
             // Abone doğrulandıktan sonra adres iste
             if (!string.IsNullOrEmpty(sessionData.AboneNo) && string.IsNullOrEmpty(sessionData.Adres))
             {
                 var abone = OrnekAboneler.FirstOrDefault(a => a.AboneNo.ToString() == sessionData.AboneNo);
                 var aboneName = abone?.IsimSoyisim ?? "Sayın Müşterimiz";
-                return $"Hoş geldiniz {aboneName}! Elektrik arızası bildirimi için adresinizi öğrenebilir miyim? Arıza yerini belirlemek için gerekli.";
+                return $"Hoş geldiniz {aboneName}! Arıza yerini belirlemek için adresinizi öğrenebilir miyim?";
             }
             
             if (string.IsNullOrEmpty(sessionData.Adres))
-                return "Kullanıcıdan adresini iste. Arıza yerini belirlemek için gerekli.";
+                return "Arıza yerini belirlemek için adresinizi öğrenebilir miyim?";
             
             if (string.IsNullOrEmpty(sessionData.ArizaAciklamasi))
-                return "Kullanıcıdan arıza açıklamasını iste. Detaylı bilgi al ve hemen müdahale edeceğini belirt.";
+                return "Arıza detaylarını öğrenebilir miyim?";
             
-            return "Elektrik arızası kaydı tamamlandı. Özür dile, hemen ekip göndereceğini belirt ve tahmini süre ver.";
+            return "Arıza kaydınız alındı. Ekip en kısa sürede yola çıkacak. Teşekkür ederim.";
         }
 
         private string GetDigerInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
             if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan ad soyadını iste. Nazik ve profesyonel ol.";
+                return "Ad soyadınızı öğrenebilir miyim?";
             
             if (string.IsNullOrEmpty(sessionData.TcKimlikNo))
-                return "Kullanıcıdan T.C. Kimlik numarasını iste (11 haneli).";
+                return "T.C. Kimlik numaranızı öğrenebilir miyim? (11 haneli)";
             
             if (string.IsNullOrEmpty(sessionData.AboneNo))
-                return "Kullanıcıdan abone numarasını iste (6 haneli).";
+                return "Abone numaranızı öğrenebilir miyim? (6 haneli)";
             
-            return "Abone doğrulaması tamamlandı. Size nasıl yardımcı olabilirim? Genel soruları yanıtla ve gerekirse diğer departmanlara yönlendir.";
+            return "Size nasıl yardımcı olabilirim?";
         }
 
         private string GetSerbestSohbetInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
         {
             if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
-                return "Kullanıcıdan adını öğren ve serbest sohbet başlat. Samimi ve yardımsever ol.";
+                return "Adınızı öğrenebilir miyim?";
             
-            return "Serbest sohbet modundasın. Kullanıcı ile doğal bir şekilde konuş. Elektrik abonelik konularında da yardım edebilirsin.";
+            return "Size nasıl yardımcı olabilirim?";
+        }
+
+        private string GetCanliDestekInstructions(ChatSessionData sessionData, bool isValid, string validationMessage)
+        {
+            if (string.IsNullOrEmpty(sessionData.IsimSoyisim))
+                return "Ad soyadınızı öğrenebilir miyim?";
+            
+            return "Size nasıl yardımcı olabilirim?";
+        }
+
+        private string GetCanliDestekWelcomeMessage(ChatSessionData sessionData)
+        {
+            // Sistemsel hata durumu kontrolü
+            if (sessionData.SistemselHata == "Evet")
+            {
+                return "Merhaba! Canlı destek hizmetine hoş geldiniz. Sistemsel bir hatadan ötürü buraya yönlendirildiniz. Size hemen yardımcı olacağım ve işleminizi tamamlayacağım. Öncelikle ad soyadınızı öğrenebilir miyim?";
+            }
+            
+            // Vefat durumu kontrolü
+            if (sessionData.VefatDurumu == "Evet")
+            {
+                return "Merhaba! Canlı destek hizmetine hoş geldiniz. Vefat durumu ile ilgili işlemleriniz için size özel olarak yardımcı olacağım. Bu hassas konuda gerekli tüm adımları birlikte atacağız. Öncelikle ad soyadınızı öğrenebilir miyim?";
+            }
+            
+            // Tüzel abonelik kontrolü
+            if (sessionData.TuzelAbonelik == "Evet")
+            {
+                return "Merhaba! Canlı destek hizmetine hoş geldiniz. Tüzel abonelik işlemleriniz için size özel olarak yardımcı olacağım. Bu işlemler için gerekli doğrulama adımlarını birlikte tamamlayacağız. Öncelikle ad soyadınızı öğrenebilir miyim?";
+            }
+            
+            // Normal canlı destek
+            return "Merhaba! Canlı destek hizmetine hoş geldiniz. Size nasıl yardımcı olabilirim? Öncelikle ad soyadınızı öğrenebilir miyim?";
         }
 
         private void SaveChatHistory(string history)
@@ -799,8 +1051,16 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             // Senaryo session'a kaydedilsin
             HttpContext.Session.SetString("Scenario", scenario ?? "Diger");
             
-            // Session data'yı sıfırla
-            HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(new ChatSessionData()));
+            // Mevcut session data'yı al
+            var sessionDataStr = HttpContext.Session.GetString("SessionData");
+            var sessionData = string.IsNullOrEmpty(sessionDataStr) ? new ChatSessionData() : JsonConvert.DeserializeObject<ChatSessionData>(sessionDataStr) ?? new ChatSessionData();
+            
+            // Eğer yeni bir senaryo başlatılıyorsa (canlı destek değilse) session data'yı sıfırla
+            if (scenario != "CanliDestek")
+            {
+                sessionData = new ChatSessionData();
+                HttpContext.Session.SetString("SessionData", JsonConvert.SerializeObject(sessionData));
+            }
             
             // Chat geçmişini sıfırla ve uygun karşılama mesajı ile başlat
             string welcome = scenario switch
@@ -811,10 +1071,11 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
                 "ElektrikArizasi" => "Merhaba! Elektrik arızası bildirimi için size yardımcı olacağım. Öncelikle ad soyadınızı öğrenebilir miyim?",
                 "Diger" => "Merhaba! Size nasıl yardımcı olabilirim? Öncelikle ad soyadınızı öğrenebilir miyim?",
                 "SerbestSohbet" => "Merhaba! Ben AI destekli abonelik asistanınız. Size nasıl yardımcı olabilirim? Öncelikle adınızı öğrenebilir miyim?",
+                "CanliDestek" => GetCanliDestekWelcomeMessage(sessionData),
                 _ => "Merhaba! Size nasıl yardımcı olabilirim? Öncelikle ad soyadınızı öğrenebilir miyim?"
             };
             
-            string initialHistory = $"Bot: {welcome}\n";
+            string initialHistory = $"Asistan: {welcome}\n";
             HttpContext.Session.SetString("ChatHistory", initialHistory);
             ViewBag.Scenario = scenario;
             return View("Chat");
@@ -827,7 +1088,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Controllers
             if (string.IsNullOrEmpty(initialHistory))
             {
                 string firstBotMessage = "Merhaba! Hangi işlem için size yardımcı olabilirim? Fatura ödemesi, abonelik iptali, fatura itirazı, elektrik arızası veya diğer konularda destek verebilirim.";
-                initialHistory = $"Bot: {firstBotMessage}\n";
+                initialHistory = $"Asistan: {firstBotMessage}\n";
                 HttpContext.Session.SetString("ChatHistory", initialHistory);
             }
             return View("Chat");

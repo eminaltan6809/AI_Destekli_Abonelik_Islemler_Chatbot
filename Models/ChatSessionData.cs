@@ -23,6 +23,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Models
         public string? VefatDurumu { get; set; } = string.Empty; // Evet/Hayır
         public string? VarisBilgisi { get; set; } = string.Empty; // Tek varis/Çoklu varis
         public string? TuzelAbonelik { get; set; } = string.Empty; // Evet/Hayır
+        public string? SistemselHata { get; set; } = string.Empty; // Evet/Hayır
         public string? CanliDestekAktarim { get; set; } = string.Empty; // Evet/Hayır
         public string? IslemAdimi { get; set; } = string.Empty; // Hangi adımda olduğumuzu takip etmek için
     }

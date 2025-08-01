@@ -20,7 +20,7 @@
                 {
                     if (!string.IsNullOrWhiteSpace(line))
                     {
-                        var isBot = line.StartsWith("Bot:");
+                        var isBot = line.StartsWith("Asistan:");
                         var message = line.Substring(line.IndexOf(":") + 1).Trim();
                         <div class="d-flex @(isBot ? "justify-content-start" : "justify-content-end") mb-2">
                             <div class="chat-bubble @(isBot ? "bot" : "user")">
@@ -40,7 +40,7 @@
 
 <style>
 .chat-container {
-    height: 400px;
+    height: 500px;
     overflow-y: auto;
     border: 1px solid #dee2e6;
     border-radius: 0.375rem;
@@ -53,6 +53,8 @@
     padding: 0.75rem 1rem;
     border-radius: 1rem;
     word-wrap: break-word;
+    white-space: pre-wrap;
+    line-height: 1.4;
 }
 
 .chat-bubble.bot {
@@ -65,6 +67,12 @@
     background-color: #0d6efd;
     color: white;
     border-bottom-right-radius: 0.25rem;
+}
+
+/* Uzun mesajlar için daha iyi görünüm */
+.chat-bubble span {
+    display: inline-block;
+    width: 100%;
 }
 </style>
 

@@ -24,6 +24,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 const data = await response.json();
                 appendMessage('Chatbot', data.reply, 'bot');
                 chatbox.scrollTop = chatbox.scrollHeight;
+                
+                // Tüzel abonelik tespit edildiğinde otomatik yönlendirme
+                if (data.redirectToCanliDestek) {
+                    // Delay parametresi varsa onu kullan, yoksa 2 saniye
+                    const delay = data.delay || 2000;
+                    setTimeout(() => {
+                        window.location.href = '/Chat/Start?scenario=CanliDestek';
+                    }, delay);
+                }
             } else {
                 appendMessage('Chatbot', 'Bir hata oluştu. Lütfen tekrar deneyiniz.', 'bot');
             }
