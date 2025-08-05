@@ -43,14 +43,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function appendMessage(sender, text, type) {
         const msgDiv = document.createElement('div');
-        msgDiv.className = 'd-flex ' + (type === 'user' ? 'justify-content-end' : 'justify-content-start');
+        msgDiv.className = 'd-flex ' + (type === 'user' ? 'justify-content-end' : 'justify-content-start') + ' mb-2';
         
         const bubbleDiv = document.createElement('div');
         bubbleDiv.className = 'chat-bubble ' + (type === 'user' ? 'user' : 'bot');
         
-        const span = document.createElement('span');
-        span.textContent = text;
-        bubbleDiv.appendChild(span);
+        // Metni doğrudan bubble div'inin içine yerleştir
+        bubbleDiv.innerHTML = text.replace(/\n/g, '<br>');
         msgDiv.appendChild(bubbleDiv);
         
         chatbox.appendChild(msgDiv);

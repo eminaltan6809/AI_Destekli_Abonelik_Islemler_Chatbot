@@ -330,5 +330,5 @@ C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abo
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.Extensions.Identity.Core.dll
 C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\bin\Debug\net9.0\Microsoft.Extensions.Identity.Stores.dll
-C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\az0wazaa6m-l7mf1mz0bg.gz
-C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\foqu03bq2h-l2d6jbqnxw.gz
+C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\foqu03bq2h-fciml9s55i.gz
+C:\Users\bjk-6\Desktop\AI Destekli Abonelik Sistemi Chatbot Demo\AI_Destekli_Abonelik_Chatbot\obj\Debug\net9.0\compressed\az0wazaa6m-foqxexbr9r.gz

@@ -7,11 +7,11 @@
     <div class="row justify-content-center">
         <div class="col-lg-7 col-md-10">
             <div class="d-flex align-items-center mb-4 gap-3">
-                <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
-                    <i class="bi bi-robot text-white fs-3"></i>
+                <div class="d-flex align-items-center justify-content-center" style="width:48px;height:48px;">
+                    <img src="~/images/AIDESTEKLIABONELIKLOGO.png" alt="Logo" class="logo-responsive" style="width:48px;height:48px;object-fit:contain;">
                 </div>
                 <div>
-                    <h2 class="mb-0 fw-bold" style="color:#6366f1">@scenario Chatbot</h2>
+                    <h2 class="mb-0 fw-bold" style="color:#000000">@scenario Chatbot</h2>
                     <div class="text-muted small">AI destekli abonelik işlemleri asistanı</div>
                 </div>
             </div>
@@ -24,7 +24,7 @@
                         var message = line.Substring(line.IndexOf(":") + 1).Trim();
                         <div class="d-flex @(isBot ? "justify-content-start" : "justify-content-end") mb-2">
                             <div class="chat-bubble @(isBot ? "bot" : "user")">
-                                <span>@message</span>
+                                @Html.Raw(message.Replace("\n", "<br>"))
                             </div>
                         </div>
                     }
@@ -46,6 +46,7 @@
     border-radius: 0.375rem;
     padding: 1rem;
     background-color: #f8f9fa;
+    scroll-behavior: smooth;
 }
 
 .chat-bubble {
@@ -53,8 +54,8 @@
     padding: 0.75rem 1rem;
     border-radius: 1rem;
     word-wrap: break-word;
-    white-space: pre-wrap;
     line-height: 1.4;
+    display: block;
 }
 
 .chat-bubble.bot {
@@ -69,10 +70,10 @@
     border-bottom-right-radius: 0.25rem;
 }
 
-/* Uzun mesajlar için daha iyi görünüm */
-.chat-bubble span {
-    display: inline-block;
-    width: 100%;
+/* Chat bubble içeriği için daha iyi görünüm */
+.chat-bubble {
+    word-break: break-word;
+    white-space: normal;
 }
 </style>
 
