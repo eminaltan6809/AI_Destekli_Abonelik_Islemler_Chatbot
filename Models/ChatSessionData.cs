@@ -10,6 +10,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Models
         public string? ItirazSebebi { get; set; } = string.Empty;
         public string? Adres { get; set; } = string.Empty;
         public string? ArizaAciklamasi { get; set; } = string.Empty;
+        public string? FaturaOnayi { get; set; } = string.Empty; // Evet/Hayır
         
         // Abonelik iptali senaryoları için yeni alanlar
         public string? AboneSahibiMi { get; set; } = string.Empty; // Evet/Hayır/Vefat/Şirket

@@ -9,6 +9,7 @@ namespace AI_Destekli_Abonelik_Chatbot.Models
         public long Telefon { get; set; }
         public int FaturaId { get; set; }
         public string Adres { get; set; } = string.Empty;
+        public int OdenecekFatura { get; set; } // 3 basamaklı fatura tutarı
         
         // Abonelik iptali senaryoları için gerekli yeni alanlar
         public string BabaAdi { get; set; } = string.Empty;

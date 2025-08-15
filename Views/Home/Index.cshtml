@@ -12,44 +12,49 @@
         </div>
     </div>
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="mb-5">
-            <form method="get" action="/Chat/Start" class="d-grid gap-4">
-                <input type="hidden" name="scenario" value="FaturaOdemesi" />
-                <button type="submit" name="scenario" value="FaturaOdemesi" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-receipt text-white fs-4"></i> Fatura Ödemesi
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="AbonelikIptali" class="btn btn-danger btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-x-circle text-white fs-4"></i> Abonelik İptali
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="FaturaItirazi" class="btn btn-warning btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-exclamation-diamond text-dark fs-4"></i> Fatura İtirazı
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="ElektrikArizasi" class="btn btn-info btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-lightning-charge text-white fs-4"></i> Elektrik Arızası
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="Diger" class="btn btn-secondary btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-three-dots text-white fs-4"></i> Diğer
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="SerbestSohbet" class="btn btn-success btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-robot text-white fs-4"></i> Serbest Sohbet
-                </button>
-            </form>
-            <form method="get" action="/Chat/Start" class="d-grid gap-4 mt-3">
-                <button type="submit" name="scenario" value="CanliDestek" class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
-                    <i class="bi bi-headset text-white fs-4"></i> Canlı Destek
-                </button>
-            </form>
+        <div class="col-lg-10 col-md-12">
+            <div class="row mb-5">
+                <!-- Sol Sütun -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-grid gap-3">
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="FaturaOdemesi" class="btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-receipt text-white fs-4"></i> Fatura Ödemesi
+                            </button>
+                        </form>
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="AbonelikIptali" class="btn btn-danger btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-x-circle text-white fs-4"></i> Abonelik İptali
+                            </button>
+                        </form>
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="FaturaItirazi" class="btn btn-warning btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-exclamation-diamond text-dark fs-4"></i> Fatura İtirazı
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Sağ Sütun -->
+                <div class="col-md-6 mb-4">
+                    <div class="d-grid gap-3">
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="ElektrikArizasi" class="btn btn-info btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-lightning-charge text-white fs-4"></i> Elektrik Arızası
+                            </button>
+                        </form>
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="Diger" class="btn btn-secondary btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-three-dots text-white fs-4"></i> Diğer
+                            </button>
+                        </form>
+                        <form method="get" action="/Chat/Start">
+                            <button type="submit" name="scenario" value="CanliDestek" class="btn btn-dark btn-lg w-100 d-flex align-items-center justify-content-center gap-2 fw-bold py-3">
+                                <i class="bi bi-headset text-white fs-4"></i> Canlı Destek
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
